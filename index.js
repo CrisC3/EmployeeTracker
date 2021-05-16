@@ -1,36 +1,50 @@
-const mysql = require('mysql');
-const inquirer = require('inquirer');
+const mysql = require("mysql");
+const inquirer = require("inquirer");
 const cTable = require("console.table");
 
 const connection = mysql.createConnection({
-    host: 'localhost',
+    host: "localhost",
   
     // Your port; if not 3306
     port: 3306,
   
     // Your username
-    user: 'root',
+    user: "root",
   
     // Your password
-    password: 'Bootcamp2021',
-    database: 'employeecms',
-  });
+    password: "Bootcamp2021",
+    database: "employeeCms",
+});
 
-  connection.connect((err) => {
+connection.connect((err) => {
     if (err) throw err;
-    
-    connection.query("SELECT * FROM department", (err, res) => {
-        if (err) throw err;
-        console.table(res);
-    });
-    connection.query("SELECT * FROM role", (err, res) => {
-        if (err) throw err;
-        console.table(res);
-    });
-    connection.query("SELECT * FROM employee", (err, res) => {
-        if (err) throw err;
-        console.table(res);
-    });
+    mainPrompt();
+});
 
-    connection.end();
-  });
+const mainPrompt = () => {
+
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "mainprompt",
+                message: "What would you like to do?",
+                choices: [
+                    "View all Employees",
+                    "View All Employees By Department",
+                    "View All Employees By Manager",
+                    "Add Employee",
+                    "Remove Employee",
+                    "Update Employee Role",
+                    "Update Employee Manager",
+                    "View All Roles",
+                    "Add Role",
+                    "Remove Role",
+                    "..Finish"]
+            }
+        ])
+        .then((response) => {
+            console.log(response.mainprompt);
+            connection.end();
+        });
+};
