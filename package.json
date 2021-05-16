@@ -1,0 +1,23 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "Managing employees in a company",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CrisC3/EmployeeTracker.git"
+  },
+  "author": "Cris C.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CrisC3/EmployeeTracker/issues"
+  },
+  "homepage": "https://github.com/CrisC3/EmployeeTracker#readme",
+  "dependencies": {
+    "inquirer": "^8.0.0",
+    "mysql": "^2.18.1"
+  }
+}
