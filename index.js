@@ -7,8 +7,8 @@ const asEmpFirstName = `first_name AS "[First Name]"`;
 const asEmpLastName = `last_name AS "[Last Name]"`;
 const asRoleTitle = `title AS "[Title]"`;
 const asDeptName = `name AS "[Department]"`;
-const asSalary = `[Salary]`;
-const asManager = `[Manager]`;
+const asSalary = `"[Salary]"`;
+const asManager = `"[Manager]"`;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -101,8 +101,8 @@ const viewAllEmployees = () => {
         emp.${asEmpLastName},
         role.${asRoleTitle},
         department.${asDeptName},
-        CONCAT("$ ", FORMAT(role.salary, 2)) AS "${asSalary}",
-        IFNULL(CONCAT(mgr.first_name, ", ", mgr.last_name), "(N/A)") AS "${asManager}"
+        CONCAT("$ ", FORMAT(role.salary, 2)) AS ${asSalary},
+        IFNULL(CONCAT(mgr.first_name, ", ", mgr.last_name), "(N/A)") AS ${asManager}
     FROM
         employee AS emp
     LEFT JOIN employee AS mgr ON
@@ -118,6 +118,8 @@ const viewAllEmployees = () => {
         if (err) throw err;
         
         console.table(res);
+
+        // console.log("Hello %s and %s !!!", "C", "V");
         
         connection.end();
         mainPrompt();
