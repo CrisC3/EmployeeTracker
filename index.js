@@ -52,17 +52,20 @@ const mainPrompt = () => {
             
             switch (response.mainprompt) {
                 case "View all Employees":
+                    
+                    // Calls the const anonymous function
                     viewAllEmployees();
                     break;
                 case "..Finish":                    
                     
-                    if (connection.state === "authenticated") {
+                    // Checks if the MySQL connection is connected
+                    // before exiting application
+                    if (connection.state == "authenticated") {
                         console.log("Closing MySQL connection");
                         connection.end();
                     }
 
                     console.log("Exiting application");
-                    
                     break;
             }
             
@@ -73,8 +76,8 @@ const viewAllEmployees = () => {
     
     console.log("\nQuerying for all employees\n");
     
-    const localQuery = `
-    SELECT 
+    const localQuery = 
+    `SELECT 
         emp.ID,
         emp.first_name AS "First Name",
         emp.last_name AS "Last Name",
