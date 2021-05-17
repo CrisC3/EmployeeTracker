@@ -3,12 +3,12 @@ const inquirer = require("inquirer");
 const cTable = require("console.table");
 
 const asEmpId = `id AS "[Employee ID]"`;
-const asEmpFirstName = `first_name AS "[First Name]"`;
-const asEmpLastName = `last_name AS "[Last Name]"`;
+const asEmpFirstName = `first_name AS "[Emp. First Name]"`;
+const asEmpLastName = `last_name AS "[Emp. Last Name]"`;
 const asRoleTitle = `title AS "[Title]"`;
 const asDeptName = `name AS "[Department]"`;
 const asSalary = `"[Salary]"`;
-const asManager = `"[Manager]"`;
+const asManager = `"[Manager Name]"`;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -96,11 +96,23 @@ const mainPrompt = () => {
         });
 };
 
+function runQuery(sqlQueryData) {
+
+    connection.query(sqlQueryData, (err, res) => {
+        if (err) throw err;
+        
+        console.table(res);
+
+        mainPrompt();
+    });
+
+}
+
 const viewAllEmployees = () => {
     
     console.log("\nQuerying for all employees\n");
     
-    const localQuery = 
+    const sqlQuery = 
     `SELECT 
         emp.${asEmpId},
         emp.${asEmpFirstName},
@@ -108,7 +120,7 @@ const viewAllEmployees = () => {
         role.${asRoleTitle},
         department.${asDeptName},
         CONCAT("$ ", FORMAT(role.salary, 2)) AS ${asSalary},
-        IFNULL(CONCAT(mgr.first_name, ", ", mgr.last_name), "(N/A)") AS ${asManager}
+        IFNULL(CONCAT(mgr.first_name, " ", mgr.last_name), "(N/A)") AS ${asManager}
     FROM
         employee AS emp
     LEFT JOIN employee AS mgr ON
@@ -120,20 +132,14 @@ const viewAllEmployees = () => {
     ORDER BY
         emp.id`;
     
-    connection.query(localQuery, (err, res) => {
-        if (err) throw err;
-        
-        console.table(res);
-
-        mainPrompt();
-    });
+    runQuery(sqlQuery);
 };
 
 const viewAllEmployeesByDep = () => {
     
     console.log("\nQuerying for all employees by department\n");
     
-    const localQuery = 
+    const sqlQuery = 
     `SELECT 
         emp.${asEmpId},
         emp.${asEmpFirstName},
@@ -148,17 +154,25 @@ const viewAllEmployeesByDep = () => {
     ORDER BY
         emp.id`;
     
-    connection.query(localQuery, (err, res) => {
-        if (err) throw err;
-        
-        console.table(res);
-
-        mainPrompt();
-    });
+    runQuery(sqlQuery);
 };
 
 const viewAllEmployeesByMgr = () => {
     
     console.log("\nQuerying for all employees by manager\n");
 
+    const sqlQuery = 
+    `SELECT 
+        emp.${asEmpId},
+        emp.${asEmpFirstName},
+        emp.${asEmpLastName},
+        IFNULL(CONCAT(mgr.first_name, " ", mgr.last_name), "(N/A)") AS ${asManager}
+    FROM
+        employee AS emp
+    INNER JOIN employee AS mgr ON
+        mgr.id = emp.manager_id
+    ORDER BY
+        CONCAT(mgr.first_name, " ", mgr.last_name), emp.id`;
+
+    runQuery(sqlQuery);
 };
