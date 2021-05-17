@@ -49,7 +49,40 @@ const mainPrompt = () => {
             }
         ])
         .then((response) => {
-            console.log(response.mainprompt);
-            connection.end();
+            
+            switch (response.mainprompt) {
+                case "View all Employees":
+                    viewAllEmployees();
+                    break;
+                case "..Finish":
+                    console.log("Closing MySQL connection");
+                    break;
+            }
+            
         });
 };
+
+const viewAllEmployees = () => {
+    
+    console.log("\nQuerying for all users\n");
+    
+    const localQuery = `
+    SELECT 
+        emp.ID,
+        emp.first_name as "First Name",
+        emp.last_name as "Last Name",
+        IFNULL(CONCAT(mgr.first_name, ", ", mgr.last_name), "(N/A)") AS Manager
+    FROM
+        employee AS emp
+    LEFT JOIN employee AS mgr ON
+        mgr.id = emp.manager_id`;
+    
+    connection.query(localQuery, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        connection.end();
+        mainPrompt();
+    });
+
+    
+}
