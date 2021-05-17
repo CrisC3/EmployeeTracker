@@ -126,9 +126,21 @@ async function getListQuery(sqlQuery) {
     await getFullList
     .then(response => {
         
-        response.forEach(element => {
-            sqlList.push(element.title);
-        });
+        let newData = JSON.parse(JSON.stringify(response));
+
+       if (newData[0].hasOwnProperty("title")) {
+            newData.forEach(element => {
+                sqlList.push(element.title);
+            });
+        }
+        else if (newData[0].hasOwnProperty("manager")) {
+
+            sqlList.push("None");
+
+            newData.forEach(element => {
+                sqlList.push(element.manager);
+            });
+        }
     })
 
     return sqlList;    
@@ -208,7 +220,15 @@ const addEmployee = async () => {
     console.log("\nAdding new employee\n");
 
     const rolesQuery = "SELECT title FROM role";
+    const mgrQuery = `SELECT CONCAT(first_name, " ", last_name) AS manager FROM employee`;
     const roleChoices = await getListQuery(rolesQuery);
+    const mgrChoices = await getListQuery(mgrQuery);
+
+    // console.log("=== roleChoices ===");
+    // console.log(roleChoices);
+    // console.log("+++ mgrChoices +++");
+    // console.log(mgrChoices);
+    // console.log("~~~~~~~~~~~~~~~~~~~~~~~");
 
     inquirer
         .prompt([
@@ -224,18 +244,18 @@ const addEmployee = async () => {
             },
             {
                 type: "list",
-                loop: false,
+                // loop: false,
                 name: "newEmpRole",
                 message: "Please enter the new employee's role:",
                 choices: roleChoices
-            }/*,
+            },
             {
                 type: "list",
-                loop: true,
-                name: "newEmpRole",
-                message: "Please enter the new employee's role:",
-                choices: roleChoices
-            }*/
+                // loop: true,
+                name: "newEmpMgr",
+                message: "Please enter the new employee's manager:",
+                choices: mgrChoices
+            }
         ])
         .then((response) => {
             
