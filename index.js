@@ -64,7 +64,7 @@ const mainPrompt = () => {
 
 const viewAllEmployees = () => {
     
-    console.log("\nQuerying for all users\n");
+    console.log("\nQuerying for all employees\n");
     
     const localQuery = `
     SELECT 
