@@ -72,6 +72,12 @@ const mainPrompt = () => {
                     viewAllEmployeesByDep();
                     break;
 
+                case "View All Employees By Manager":
+
+                    // Calls the const anonymous function
+                    viewAllEmployeesByMgr();
+                    break;
+
                 case "..Finish":                    
                     
                     // Checks if the MySQL connection is
@@ -121,7 +127,7 @@ const viewAllEmployees = () => {
 
         mainPrompt();
     });
-}
+};
 
 const viewAllEmployeesByDep = () => {
     
@@ -149,4 +155,10 @@ const viewAllEmployeesByDep = () => {
 
         mainPrompt();
     });
-}
+};
+
+const viewAllEmployeesByMgr = () => {
+    
+    console.log("\nQuerying for all employees by manager\n");
+
+};
