@@ -2,6 +2,13 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
+const asFirstName = "[First Name]";
+const asLastName = "[Last Name]";
+const asTitle = "[Title]";
+const asDepartment = "[Department]";
+const asSalary = "[Salary]";
+const asManager = "[Manager]";
+
 const connection = mysql.createConnection({
     host: "localhost",
   
@@ -89,12 +96,12 @@ const viewAllEmployees = () => {
     const localQuery = 
     `SELECT 
         emp.ID,
-        emp.first_name AS "First Name",
-        emp.last_name AS "Last Name",
-        role.title AS "Title",
-        department.name AS "Department",
-        CONCAT("$ ", FORMAT(role.salary, 2)) AS "Salary",
-        IFNULL(CONCAT(mgr.first_name, ", ", mgr.last_name), "(N/A)") AS Manager
+        emp.first_name AS "${asFirstName}",
+        emp.last_name AS "${asLastName}",
+        role.title AS "${asTitle}",
+        department.name AS "${asDepartment}",
+        CONCAT("$ ", FORMAT(role.salary, 2)) AS "${asSalary}",
+        IFNULL(CONCAT(mgr.first_name, ", ", mgr.last_name), "(N/A)") AS "${asManager}"
     FROM
         employee AS emp
     LEFT JOIN employee AS mgr ON
@@ -122,7 +129,7 @@ const viewAllEmployeesByDep = () => {
     
     const localQuery = 
     `SELECT 
-        *
+        first_name AS "${asFirstName}"
     FROM
         employee`;
     
