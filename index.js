@@ -69,13 +69,22 @@ const viewAllEmployees = () => {
     const localQuery = `
     SELECT 
         emp.ID,
-        emp.first_name as "First Name",
-        emp.last_name as "Last Name",
+        emp.first_name AS "First Name",
+        emp.last_name AS "Last Name",
+        role.title AS "Title",
+        department.name AS "Department",
+        CONCAT("$ ", FORMAT(role.salary, 2)) AS "Salary",
         IFNULL(CONCAT(mgr.first_name, ", ", mgr.last_name), "(N/A)") AS Manager
     FROM
         employee AS emp
     LEFT JOIN employee AS mgr ON
-        mgr.id = emp.manager_id`;
+        mgr.id = emp.manager_id
+    INNER JOIN role ON
+        emp.role_id = role.id
+    INNER JOIN department ON
+        role.department_id = department.id
+    ORDER BY
+        emp.id`;
     
     connection.query(localQuery, (err, res) => {
         if (err) throw err;
