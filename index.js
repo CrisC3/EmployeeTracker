@@ -40,6 +40,11 @@ const mainPrompt = () => {
                     "View All Roles",
                     "Add Role",
                     "Remove Role",
+                    "Update Role",
+                    "View all departments",
+                    "Add department",
+                    "Remove department",
+                    "Update department",
                     "..Finish"]
             }
         ])
