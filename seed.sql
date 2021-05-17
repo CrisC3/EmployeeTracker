@@ -79,8 +79,8 @@ UPDATE employee
 SET manager_id = @ManagerId
 WHERE id = @EmployeeId;
 
-SET @ManagerId = (SELECT id FROM employee WHERE first_name LIKE "Tammer" AND last_name LIKE "Galal");
-SET @EmployeeId = (SELECT id FROM employee WHERE first_name LIKE "Kevin" AND last_name LIKE "Tupik");
+SET @ManagerId = (SELECT id FROM employee WHERE first_name LIKE "Kevin" AND last_name LIKE "Tupik");
+SET @EmployeeId = (SELECT id FROM employee WHERE first_name LIKE "Tammer" AND last_name LIKE "Galal");
 
 UPDATE employee
 SET manager_id = @ManagerId
