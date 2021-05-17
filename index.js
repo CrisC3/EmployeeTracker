@@ -54,8 +54,15 @@ const mainPrompt = () => {
                 case "View all Employees":
                     viewAllEmployees();
                     break;
-                case "..Finish":
-                    console.log("Closing MySQL connection");
+                case "..Finish":                    
+                    
+                    if (connection.state === "authenticated") {
+                        console.log("Closing MySQL connection");
+                        connection.end();
+                    }
+
+                    console.log("Exiting application");
+                    
                     break;
             }
             
@@ -88,7 +95,9 @@ const viewAllEmployees = () => {
     
     connection.query(localQuery, (err, res) => {
         if (err) throw err;
+        
         console.table(res);
+        
         connection.end();
         mainPrompt();
     });
