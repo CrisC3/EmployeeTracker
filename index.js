@@ -119,9 +119,6 @@ const viewAllEmployees = () => {
         
         console.table(res);
 
-        // console.log("Hello %s and %s !!!", "C", "V");
-        
-        connection.end();
         mainPrompt();
     });
 }
@@ -132,16 +129,22 @@ const viewAllEmployeesByDep = () => {
     
     const localQuery = 
     `SELECT 
-        first_name
+        emp.${asEmpId},
+        emp.${asEmpFirstName},
+        emp.${asEmpLastName},
+        dept.${asDeptName}
     FROM
-        employee`;
+        employee emp
+    INNER JOIN role ON
+        emp.role_id = role.id
+    INNER JOIN department dept ON
+        role.department_id = dept.id`;
     
     connection.query(localQuery, (err, res) => {
         if (err) throw err;
         
         console.table(res);
-        
-        connection.end();
+
         mainPrompt();
     });
 }
