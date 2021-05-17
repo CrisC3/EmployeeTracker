@@ -78,6 +78,12 @@ const mainPrompt = () => {
                     viewAllEmployeesByMgr();
                     break;
 
+                case "Add Employee":
+
+                    // Calls the const anonymous function
+                    addEmployee();
+                    break;
+
                 case "..Finish":                    
                     
                     // Checks if the MySQL connection is
@@ -173,6 +179,15 @@ const viewAllEmployeesByMgr = () => {
         mgr.id = emp.manager_id
     ORDER BY
         CONCAT(mgr.first_name, " ", mgr.last_name), emp.id`;
+
+    runQuery(sqlQuery);
+};
+
+const addEmployee = () => {
+    
+    console.log("\nAdding new employee\n");
+
+    const sqlQuery = `SELECT * FROM employee`;
 
     runQuery(sqlQuery);
 };
