@@ -2,12 +2,12 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
-const asFirstName = "[First Name]";
-const asLastName = "[Last Name]";
-const asTitle = "[Title]";
-const asDepartment = "[Department]";
-const asSalary = "[Salary]";
-const asManager = "[Manager]";
+const asFirstName = `first_name AS "[First Name]"`;
+const asLastName = `last_name AS "[Last Name]"`;
+const asTitle = `title AS "[Title]"`;
+const asDepartment = `name AS "[Department]"`;
+const asSalary = `[Salary]`;
+const asManager = `[Manager]`;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -96,10 +96,10 @@ const viewAllEmployees = () => {
     const localQuery = 
     `SELECT 
         emp.ID,
-        emp.first_name AS "${asFirstName}",
-        emp.last_name AS "${asLastName}",
-        role.title AS "${asTitle}",
-        department.name AS "${asDepartment}",
+        emp.${asFirstName},
+        emp.${asLastName},
+        role.${asTitle},
+        department.${asDepartment},
         CONCAT("$ ", FORMAT(role.salary, 2)) AS "${asSalary}",
         IFNULL(CONCAT(mgr.first_name, ", ", mgr.last_name), "(N/A)") AS "${asManager}"
     FROM
