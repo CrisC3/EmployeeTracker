@@ -113,12 +113,25 @@ function runQuery(sqlQueryData) {
     });
 }
 
-function getListQuery(sqlQuery) {
+async function getListQuery(sqlQuery) {
 
-    let sqlList = ["Salesperson"];
+    let sqlList = [];
 
-    return sqlList;
+    const getFullList = new Promise((resolve, reject) => {
 
+        connection.query(sqlQuery, (err, res) => (err) ? reject(err) : resolve(res));
+
+    });
+
+    await getFullList
+    .then(response => {
+        
+        response.forEach(element => {
+            sqlList.push(element.title);
+        });
+    })
+
+    return sqlList;    
 }
 
 const viewAllEmployees = () => {
@@ -190,16 +203,12 @@ const viewAllEmployeesByMgr = () => {
     runQuery(sqlQuery);
 };
 
-const addEmployee = () => {
+const addEmployee = async () => {
     
     console.log("\nAdding new employee\n");
 
     const rolesQuery = "SELECT title FROM role";
-    const roleChoices = getListQuery(rolesQuery);
-
-    console.log("=== Line 202 ===");
-    console.log(roleChoices);
-    console.log("=== Line 204 ===");
+    const roleChoices = await getListQuery(rolesQuery);
 
     inquirer
         .prompt([
@@ -215,10 +224,18 @@ const addEmployee = () => {
             },
             {
                 type: "list",
+                loop: false,
                 name: "newEmpRole",
                 message: "Please enter the new employee's role:",
                 choices: roleChoices
-            }
+            }/*,
+            {
+                type: "list",
+                loop: true,
+                name: "newEmpRole",
+                message: "Please enter the new employee's role:",
+                choices: roleChoices
+            }*/
         ])
         .then((response) => {
             
