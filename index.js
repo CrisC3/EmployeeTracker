@@ -102,7 +102,7 @@ const mainPrompt = () => {
         });
 };
 
-function runQuery(sqlQueryData) {
+function runQuerySelect(sqlQueryData) {
 
     connection.query(sqlQueryData, (err, res) => {
         if (err) throw err;
@@ -111,7 +111,6 @@ function runQuery(sqlQueryData) {
 
         mainPrompt();
     });
-
 }
 
 const viewAllEmployees = () => {
@@ -138,7 +137,7 @@ const viewAllEmployees = () => {
     ORDER BY
         emp.id`;
     
-    runQuery(sqlQuery);
+    runQuerySelect(sqlQuery);
 };
 
 const viewAllEmployeesByDep = () => {
@@ -160,7 +159,7 @@ const viewAllEmployeesByDep = () => {
     ORDER BY
         emp.id`;
     
-    runQuery(sqlQuery);
+    runQuerySelect(sqlQuery);
 };
 
 const viewAllEmployeesByMgr = () => {
@@ -180,7 +179,7 @@ const viewAllEmployeesByMgr = () => {
     ORDER BY
         CONCAT(mgr.first_name, " ", mgr.last_name), emp.id`;
 
-    runQuery(sqlQuery);
+    runQuerySelect(sqlQuery);
 };
 
 const addEmployee = () => {
@@ -212,7 +211,7 @@ const addEmployee = () => {
 
             const sqlQuery = `SELECT * FROM employee`;
 
-            runQuery(sqlQuery);
+            runQuerySelect(sqlQuery);
             
         });   
     
