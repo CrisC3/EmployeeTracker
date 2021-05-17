@@ -113,6 +113,14 @@ function runQuery(sqlQueryData) {
     });
 }
 
+function getListQuery(sqlQuery) {
+
+    let sqlList = ["Salesperson"];
+
+    return sqlList;
+
+}
+
 const viewAllEmployees = () => {
     
     console.log("\nQuerying for all employees\n");
@@ -186,6 +194,13 @@ const addEmployee = () => {
     
     console.log("\nAdding new employee\n");
 
+    const rolesQuery = "SELECT title FROM role";
+    const roleChoices = getListQuery(rolesQuery);
+
+    console.log("=== Line 202 ===");
+    console.log(roleChoices);
+    console.log("=== Line 204 ===");
+
     inquirer
         .prompt([
             {
@@ -202,7 +217,7 @@ const addEmployee = () => {
                 type: "list",
                 name: "newEmpRole",
                 message: "Please enter the new employee's role:",
-                choices: [`SELECT * FROM employee`]
+                choices: roleChoices
             }
         ])
         .then((response) => {
