@@ -2,10 +2,11 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
-const asFirstName = `first_name AS "[First Name]"`;
-const asLastName = `last_name AS "[Last Name]"`;
-const asTitle = `title AS "[Title]"`;
-const asDepartment = `name AS "[Department]"`;
+const asEmpId = `id AS "[Employee ID]"`;
+const asEmpFirstName = `first_name AS "[First Name]"`;
+const asEmpLastName = `last_name AS "[Last Name]"`;
+const asRoleTitle = `title AS "[Title]"`;
+const asDeptName = `name AS "[Department]"`;
 const asSalary = `[Salary]`;
 const asManager = `[Manager]`;
 
@@ -95,11 +96,11 @@ const viewAllEmployees = () => {
     
     const localQuery = 
     `SELECT 
-        emp.ID,
-        emp.${asFirstName},
-        emp.${asLastName},
-        role.${asTitle},
-        department.${asDepartment},
+        emp.${asEmpId},
+        emp.${asEmpFirstName},
+        emp.${asEmpLastName},
+        role.${asRoleTitle},
+        department.${asDeptName},
         CONCAT("$ ", FORMAT(role.salary, 2)) AS "${asSalary}",
         IFNULL(CONCAT(mgr.first_name, ", ", mgr.last_name), "(N/A)") AS "${asManager}"
     FROM
@@ -129,7 +130,7 @@ const viewAllEmployeesByDep = () => {
     
     const localQuery = 
     `SELECT 
-        first_name AS "${asFirstName}"
+        first_name
     FROM
         employee`;
     
