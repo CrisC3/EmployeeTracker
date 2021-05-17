@@ -187,7 +187,33 @@ const addEmployee = () => {
     
     console.log("\nAdding new employee\n");
 
-    const sqlQuery = `SELECT * FROM employee`;
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "newEmpFirst",
+                message: "Please enter the new employee's first name:"                
+            },
+            {
+                type: "input",
+                name: "newEmpLast",
+                message: "Please enter the new employee's last name:"                
+            },
+            {
+                type: "list",
+                name: "newEmpRole",
+                message: "Please enter the new employee's role:",
+                choices: [`SELECT * FROM employee`]
+            }
+        ])
+        .then((response) => {
+            
+            console.log(response);
 
-    runQuery(sqlQuery);
+            const sqlQuery = `SELECT * FROM employee`;
+
+            runQuery(sqlQuery);
+            
+        });   
+    
 };
