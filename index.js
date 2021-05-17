@@ -138,7 +138,9 @@ const viewAllEmployeesByDep = () => {
     INNER JOIN role ON
         emp.role_id = role.id
     INNER JOIN department dept ON
-        role.department_id = dept.id`;
+        role.department_id = dept.id
+    ORDER BY
+        emp.id`;
     
     connection.query(localQuery, (err, res) => {
         if (err) throw err;
