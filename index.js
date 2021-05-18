@@ -239,7 +239,7 @@ const addEmployee = async () => {
             {
                 type: "list",
                 name: "newEmpRole",
-                message: "Please enter the new employee's role:",
+                message: "Please enter the new employee's title/role:",
                 choices: roleChoices
             },
             {
@@ -250,13 +250,18 @@ const addEmployee = async () => {
             }
         ])
         .then((response) => {
-            
-            console.log(response);
 
             let sqlQuery;
 
             if (response.newEmpMgr == "None") {
-                sqlQuery = "";
+                sqlQuery =
+                `INSERT INTO employee (first_name, last_name, role_id)
+                VALUES
+                (
+                    "${response.newEmpFirst}",
+                    "${response.newEmpLast}",
+                    (SELECT id FROM role WHERE title LIKE "${response.newEmpRole}")
+                );`;
             }
             else {
                 sqlQuery = "";
