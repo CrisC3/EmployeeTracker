@@ -160,7 +160,7 @@ async function getListQuery(sqlQuery, exclude) {
         console.log("=== newData output for testing [START] ===\n");
         console.log(newData);
         console.log("\n=== newData output for testing [END] ===");
-        
+
         if (newData[0].hasOwnProperty("title")) {
 
             console.log("Inside of TITLE");
@@ -170,19 +170,25 @@ async function getListQuery(sqlQuery, exclude) {
                 sqlList.push(element.title);
             });
         }
-        else if ((newData[0].hasOwnProperty("manager")) || (newData[0].hasOwnProperty("empFullName"))) {
+        else if (newData[0].hasOwnProperty("manager")) {
 
             console.log("Inside of MANAGER");
             sqlList.push("None");
 
             newData.forEach(element => {
-                if (element.manager != exclude) {
-                    sqlList.push(element.manager);
-                }
-                else {
-                    sqlList.push(element.empFullName);
-                }
+                
+                sqlList.push(element.manager);
             });
+        }
+        else if (newData[0].hasOwnProperty("empFullName")) {
+
+            console.log("Inside of empFullName");
+            sqlList.push("None");
+
+            newData.forEach(element => {
+                
+                sqlList.push(element.empFullName);
+            });            
         }
         else {
             sqlList.push(newData[0]);
