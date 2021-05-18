@@ -84,6 +84,12 @@ const mainPrompt = () => {
                     addEmployee();
                     break;
 
+                case "Remove Employee":
+
+                    // Calls the const anonymous function
+                    remEmployee();
+                    break;
+
                 case "..Finish":                    
                     
                     // Checks if the MySQL connection is
@@ -112,7 +118,12 @@ function runQuery(sqlQueryData, returnToCall, queryType, info) {
         }
         else if (sqlQueryData.substring(0, 6) == "INSERT" && (queryType == "AddEmployee")) {
             sepStart();
-            console.log(`Added ${info} to the database`);
+            console.log(`Added "${info}" to the database`);
+            sepEnd();
+        }
+        else if (sqlQueryData.substring(0, 6) == "DELETE" && (queryType == "deleteEmployee")) {
+            sepStart();
+            console.log(`Remove "${info}" from the database`);
             sepEnd();
         }
         
@@ -130,6 +141,8 @@ function runQuery(sqlQueryData, returnToCall, queryType, info) {
 async function getListQuery(sqlQuery, exclude) {
 
     let sqlList = [];
+
+    console.log(sqlQuery);
 
     const getFullList = new Promise((resolve, reject) => {
         connection.query(sqlQuery, (err, res) => (err) ? reject(err) : resolve(res));
@@ -237,7 +250,7 @@ const viewAllEmployeesByMgr = () => {
 
 const addEmployee = async () => {
     
-    console.log("\nAdding new employee\n");
+    console.log("\nAdding new employee(s)\n");
 
     const rolesQuery = "SELECT title FROM role";
     const mgrQuery = `SELECT CONCAT(first_name, " ", last_name) AS manager FROM employee`;
@@ -334,7 +347,7 @@ const addEmployee = async () => {
                     const empId = newEmpQuery[0].id;
                     
                     const updateEmpMgrQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`                
-                    
+
                     runQuery(updateEmpMgrQuery);
                 }
             }
@@ -346,6 +359,39 @@ const addEmployee = async () => {
             }
         });
 };
+
+const remEmployee = async () => {
+    
+    console.log("\nRemove existing employee(s)\n");
+
+    const employeesQuery = `SELECT CONCAT(first_name, " ", last_name) AS manager FROM employee`;
+    const empChoices = await getListQuery(employeesQuery);
+
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "chosenEmp",
+                message: "Please select the employee you want to remove:",
+                choices: empChoices
+            }
+        ])
+        .then(async (response) => {
+
+            const empFullName = (response.chosenEmp != "None") ? response.chosenEmp.split(" ") : [];
+            const empFirstName = empFullName[0];
+            const empLastName = empFullName[1];
+
+            const getRemEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
+            const remEmpQuery = await getListQuery(getRemEmplId);
+            const empId = remEmpQuery[0].id;
+
+            const deleteEmpMgrQuery = `DELETE FROM employee WHERE id = ${empId};`                
+
+            runQuery(deleteEmpMgrQuery, false, "deleteEmployee", response.chosenEmp);
+
+        });
+}
 
 function dataValidation(input, msg) {
     
