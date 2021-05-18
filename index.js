@@ -141,6 +141,9 @@ async function getListQuery(sqlQuery, exclude) {
         let newData = JSON.parse(JSON.stringify(response));
        
         if (newData[0].hasOwnProperty("title")) {
+            
+            sqlList.push("None");
+
             newData.forEach(element => {
                 sqlList.push(element.title);
             });
@@ -246,7 +249,7 @@ const addEmployee = async () => {
             {
                 type: "input",
                 name: "newEmpFirst",
-                message: "Please enter the new employee's first name:"                
+                message: "Please enter the new employee's first name:",
             },
             {
                 type: "input",
@@ -268,48 +271,82 @@ const addEmployee = async () => {
         ])
         .then(async (response) => {
 
-            const empFullName = response.newEmpFirst + " " + response.newEmpLast;
-            const mgrFullName = (response.newEmpMgr != "None") ? response.newEmpMgr.split(" ") : [];
-            const mgrFirstName = mgrFullName[0];
-            const mgrLastName = mgrFullName[1];
-            let sqlQuery;
-
-            if (response.newEmpMgr == "None") {
-                sqlQuery =
-                `INSERT INTO employee (first_name, last_name, role_id)
-                VALUES
-                (
-                    "${response.newEmpFirst}",
-                    "${response.newEmpLast}",
-                    (SELECT id FROM role WHERE title LIKE "${response.newEmpRole}")
-                );`;
-
-                runQuery(sqlQuery, false, "AddEmployee", empFullName);
+            if ((response.newEmpFirst != "") && (response.newEmpLast != "")) {
+                
+                const empFullName = response.newEmpFirst + " " + response.newEmpLast;
+                const mgrFullName = (response.newEmpMgr != "None") ? response.newEmpMgr.split(" ") : [];
+                const mgrFirstName = mgrFullName[0];
+                const mgrLastName = mgrFullName[1];
+                
+                if ((response.newEmpMgr == "None") && (response.newEmpRole != "None")) {
+                    
+                    const sqlQuery =
+                        `INSERT INTO employee (first_name, last_name, role_id)
+                        VALUES
+                        (
+                            "${response.newEmpFirst}",
+                            "${response.newEmpLast}",
+                            (SELECT id FROM role WHERE title LIKE "${response.newEmpRole}")
+                        );`;
+                        
+                    runQuery(sqlQuery, false, "AddEmployee", empFullName);
+                }
+                else if ((response.newEmpMgr == "None") && (response.newEmpRole == "None")) {
+                    
+                    const sqlQuery =
+                        `INSERT INTO employee (first_name, last_name)
+                        VALUES
+                        (
+                            "${response.newEmpFirst}",
+                            "${response.newEmpLast}"
+                        );`;
+                        
+                    runQuery(sqlQuery, false, "AddEmployee", empFullName);
+                }
+                else {
+                    
+                    const newEmpInsertQuery =
+                        `INSERT INTO employee (first_name, last_name, role_id)
+                        VALUES
+                        (
+                            "${response.newEmpFirst}",
+                            "${response.newEmpLast}",
+                            (SELECT id FROM role WHERE title LIKE "${response.newEmpRole}")
+                        );`;
+                        
+                    runQuery(newEmpInsertQuery, true, "AddEmployee", empFullName);
+                    
+                    const getMgrIdQuery = `SELECT id FROM employee WHERE first_name LIKE "${mgrFirstName}" AND last_name LIKE "${mgrLastName}";`;
+                    const mgrIdQuery = await getListQuery(getMgrIdQuery);
+                    const mgrId = mgrIdQuery[0].id;
+                    
+                    const getNewEmplId = `SELECT id FROM employee WHERE first_name LIKE "${response.newEmpFirst}" AND last_name LIKE "${response.newEmpLast}" ORDER BY id DESC LIMIT 1;`;
+                    const newEmpQuery = await getListQuery(getNewEmplId);
+                    const empId = newEmpQuery[0].id;
+                    
+                    const updateEmpMgrQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`                
+                    
+                    runQuery(updateEmpMgrQuery);
+                }
             }
             else {
-                const newEmpInsertQuery =
-                `INSERT INTO employee (first_name, last_name, role_id)
-                VALUES
-                (
-                    "${response.newEmpFirst}",
-                    "${response.newEmpLast}",
-                    (SELECT id FROM role WHERE title LIKE "${response.newEmpRole}")
-                );`;
-                runQuery(newEmpInsertQuery, true, "AddEmployee", empFullName);
-                
-                const getMgrIdQuery = `SELECT id FROM employee WHERE first_name LIKE "${mgrFirstName}" AND last_name LIKE "${mgrLastName}";`;
-                const mgrIdQuery = await getListQuery(getMgrIdQuery);
-                const mgrId = mgrIdQuery[0].id;
-
-                const getNewEmplId = `SELECT id FROM employee WHERE first_name LIKE "${response.newEmpFirst}" AND last_name LIKE "${response.newEmpLast}" ORDER BY id DESC LIMIT 1;`;
-                const newEmpQuery = await getListQuery(getNewEmplId);
-                const empId = newEmpQuery[0].id;
-
-                const updateEmpMgrQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`                
-                runQuery(updateEmpMgrQuery);
+                sepStart();
+                console.log("No employee was added");
+                sepEnd();
+                mainPrompt();
             }
         });
 };
+
+function dataValidation(input, msg) {
+    
+    if (input)
+        return true;
+    else {
+        console.log(`\n${msg}`);
+        return false;
+    }
+}
 
 //#region Line separators
 function sepStart() {
