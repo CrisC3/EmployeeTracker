@@ -102,7 +102,7 @@ const mainPrompt = () => {
         });
 };
 
-function runQuery(sqlQueryData, from, info) {
+function runQuery(sqlQueryData, returnToCall, queryType, info) {
 
     connection.query(sqlQueryData, (err, res) => {
         if (err) throw err;
@@ -110,32 +110,37 @@ function runQuery(sqlQueryData, from, info) {
         if (sqlQueryData.substring(0, 6) == "SELECT") {
                 console.table(res);
         }
-        else if ((sqlQueryData.substring(0, 6) == "INSERT") && (from == "AddEmployee")) {
+        else if (sqlQueryData.substring(0, 6) == "INSERT" && (queryType == "AddEmployee")) {
             sepStart();
             console.log(`Added ${info} to the database`);
             sepEnd();
-        }            
-
-        mainPrompt();
+        }
+        
+        switch (returnToCall) {
+            case true:
+                return;
+            default:
+                mainPrompt();
+                break;
+        }
+        
     });
 }
 
-async function getListQuery(sqlQuery) {
+async function getListQuery(sqlQuery, exclude) {
 
     let sqlList = [];
 
     const getFullList = new Promise((resolve, reject) => {
-
         connection.query(sqlQuery, (err, res) => (err) ? reject(err) : resolve(res));
-
     });
 
     await getFullList
     .then(response => {
         
         let newData = JSON.parse(JSON.stringify(response));
-
-       if (newData[0].hasOwnProperty("title")) {
+       
+        if (newData[0].hasOwnProperty("title")) {
             newData.forEach(element => {
                 sqlList.push(element.title);
             });
@@ -145,10 +150,15 @@ async function getListQuery(sqlQuery) {
             sqlList.push("None");
 
             newData.forEach(element => {
-                sqlList.push(element.manager);
+                if (element.manager != exclude) {
+                    sqlList.push(element.manager);
+                }
             });
         }
-    })
+        else {
+            sqlList.push(newData[0]);
+        }
+    });
 
     return sqlList;    
 }
@@ -256,9 +266,12 @@ const addEmployee = async () => {
                 choices: mgrChoices
             }
         ])
-        .then((response) => {
+        .then(async (response) => {
 
-            let empFullName = response.newEmpFirst + " " + response.newEmpLast;
+            const empFullName = response.newEmpFirst + " " + response.newEmpLast;
+            const mgrFullName = (response.newEmpMgr != "None") ? response.newEmpMgr.split(" ") : [];
+            const mgrFirstName = mgrFullName[0];
+            const mgrLastName = mgrFullName[1];
             let sqlQuery;
 
             if (response.newEmpMgr == "None") {
@@ -270,15 +283,32 @@ const addEmployee = async () => {
                     "${response.newEmpLast}",
                     (SELECT id FROM role WHERE title LIKE "${response.newEmpRole}")
                 );`;
+
+                runQuery(sqlQuery, false, "AddEmployee", empFullName);
             }
             else {
-                sqlQuery = "";
-            }
+                const newEmpInsertQuery =
+                `INSERT INTO employee (first_name, last_name, role_id)
+                VALUES
+                (
+                    "${response.newEmpFirst}",
+                    "${response.newEmpLast}",
+                    (SELECT id FROM role WHERE title LIKE "${response.newEmpRole}")
+                );`;
+                runQuery(newEmpInsertQuery, true, "AddEmployee", empFullName);
+                
+                const getMgrIdQuery = `SELECT id FROM employee WHERE first_name LIKE "${mgrFirstName}" AND last_name LIKE "${mgrLastName}";`;
+                const mgrIdQuery = await getListQuery(getMgrIdQuery);
+                const mgrId = mgrIdQuery[0].id;
 
-            runQuery(sqlQuery, "AddEmployee", empFullName);
-            
-        });   
-    
+                const getNewEmplId = `SELECT id FROM employee WHERE first_name LIKE "${response.newEmpFirst}" AND last_name LIKE "${response.newEmpLast}" ORDER BY id DESC LIMIT 1;`;
+                const newEmpQuery = await getListQuery(getNewEmplId);
+                const empId = newEmpQuery[0].id;
+
+                const updateEmpMgrQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`                
+                runQuery(updateEmpMgrQuery);
+            }
+        });
 };
 
 //#region Line separators
