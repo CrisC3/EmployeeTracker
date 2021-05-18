@@ -90,7 +90,7 @@ const mainPrompt = () => {
                     // connected before exiting application
                     // If connected, end the connection
                     if (connection.state == "authenticated") {
-                        console.log("Closing MySQL connection");
+                        console.log("Ending MySQL connection");
                         connection.end();
                     }
 
@@ -223,12 +223,6 @@ const addEmployee = async () => {
     const mgrQuery = `SELECT CONCAT(first_name, " ", last_name) AS manager FROM employee`;
     const roleChoices = await getListQuery(rolesQuery);
     const mgrChoices = await getListQuery(mgrQuery);
-
-    // console.log("=== roleChoices ===");
-    // console.log(roleChoices);
-    // console.log("+++ mgrChoices +++");
-    // console.log(mgrChoices);
-    // console.log("~~~~~~~~~~~~~~~~~~~~~~~");
 
     inquirer
         .prompt([
