@@ -102,12 +102,19 @@ const mainPrompt = () => {
         });
 };
 
-function runQuery(sqlQueryData) {
+function runQuery(sqlQueryData, from, info) {
 
     connection.query(sqlQueryData, (err, res) => {
         if (err) throw err;
         
-        console.table(res);
+        if (sqlQueryData.substring(0, 6) == "SELECT") {
+                console.table(res);
+        }
+        else if ((sqlQueryData.substring(0, 6) == "INSERT") && (from == "AddEmployee")) {
+            sepStart();
+            console.log(`Added ${info} to the database`);
+            sepEnd();
+        }            
 
         mainPrompt();
     });
@@ -251,6 +258,7 @@ const addEmployee = async () => {
         ])
         .then((response) => {
 
+            let empFullName = response.newEmpFirst + " " + response.newEmpLast;
             let sqlQuery;
 
             if (response.newEmpMgr == "None") {
@@ -267,8 +275,18 @@ const addEmployee = async () => {
                 sqlQuery = "";
             }
 
-            runQuery(sqlQuery);
+            runQuery(sqlQuery, "AddEmployee", empFullName);
             
         });   
     
 };
+
+//#region Line separators
+function sepStart() {
+    console.log("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+}
+
+function sepEnd() {
+    console.log("\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
+}
+//#endregion
