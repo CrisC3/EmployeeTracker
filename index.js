@@ -253,7 +253,7 @@ const addEmployee = async () => {
             
             console.log(response);
 
-            const sqlQuery = `SELECT * FROM employee`;
+            let sqlQuery;
 
             runQuery(sqlQuery);
             
