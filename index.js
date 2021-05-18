@@ -255,6 +255,13 @@ const addEmployee = async () => {
 
             let sqlQuery;
 
+            if (response.newEmpMgr == "None") {
+                sqlQuery = "";
+            }
+            else {
+                sqlQuery = "";
+            }
+
             runQuery(sqlQuery);
             
         });   
