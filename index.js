@@ -305,7 +305,7 @@ const addEmployee = async () => {
                 }
                 else {
                     
-                    const newEmpInsertQuery =
+                    const newEmpInsertWithRoleQuery =
                         `INSERT INTO employee (first_name, last_name, role_id)
                         VALUES
                         (
@@ -313,8 +313,17 @@ const addEmployee = async () => {
                             "${response.newEmpLast}",
                             (SELECT id FROM role WHERE title LIKE "${response.newEmpRole}")
                         );`;
+                    const newEmpInsertNoRoleQuery =
+                        `INSERT INTO employee (first_name, last_name)
+                        VALUES
+                        (
+                            "${response.newEmpFirst}",
+                            "${response.newEmpLast}"
+                        );`;
                         
-                    runQuery(newEmpInsertQuery, true, "AddEmployee", empFullName);
+                        (response.newEmpRole != "None") ? 
+                        runQuery(newEmpInsertWithRoleQuery, true, "AddEmployee", empFullName) :
+                        runQuery(newEmpInsertNoRoleQuery, true, "AddEmployee", empFullName);
                     
                     const getMgrIdQuery = `SELECT id FROM employee WHERE first_name LIKE "${mgrFirstName}" AND last_name LIKE "${mgrLastName}";`;
                     const mgrIdQuery = await getListQuery(getMgrIdQuery);
