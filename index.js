@@ -238,14 +238,12 @@ const addEmployee = async () => {
             },
             {
                 type: "list",
-                // loop: false,
                 name: "newEmpRole",
                 message: "Please enter the new employee's role:",
                 choices: roleChoices
             },
             {
                 type: "list",
-                // loop: true,
                 name: "newEmpMgr",
                 message: "Please enter the new employee's manager:",
                 choices: mgrChoices
