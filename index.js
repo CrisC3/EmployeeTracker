@@ -142,7 +142,11 @@ async function getListQuery(sqlQuery, exclude) {
 
     let sqlList = [];
 
+    sepStart();
+    console.log("=== sqlQuery output for testing [START] ===\n");
     console.log(sqlQuery);
+    console.log("\n=== sqlQuery output for testing [END] ===");
+    sepEnd();
 
     const getFullList = new Promise((resolve, reject) => {
         connection.query(sqlQuery, (err, res) => (err) ? reject(err) : resolve(res));
@@ -152,22 +156,31 @@ async function getListQuery(sqlQuery, exclude) {
     .then(response => {
         
         let newData = JSON.parse(JSON.stringify(response));
-       
+
+        console.log("=== newData output for testing [START] ===\n");
+        console.log(newData);
+        console.log("\n=== newData output for testing [END] ===");
+        
         if (newData[0].hasOwnProperty("title")) {
-            
+
+            console.log("Inside of TITLE");
             sqlList.push("None");
 
             newData.forEach(element => {
                 sqlList.push(element.title);
             });
         }
-        else if (newData[0].hasOwnProperty("manager")) {
+        else if ((newData[0].hasOwnProperty("manager")) || (newData[0].hasOwnProperty("empFullName"))) {
 
+            console.log("Inside of MANAGER");
             sqlList.push("None");
 
             newData.forEach(element => {
                 if (element.manager != exclude) {
                     sqlList.push(element.manager);
+                }
+                else {
+                    sqlList.push(element.empFullName);
                 }
             });
         }
@@ -176,6 +189,11 @@ async function getListQuery(sqlQuery, exclude) {
         }
     });
 
+    sepStart();
+    console.log("=== sqlList output for testing [START] ===\n");
+    console.log(sqlList);
+    console.log("\n=== sqlList output for testing [END] ===");
+    sepEnd();
     return sqlList;    
 }
 
@@ -364,7 +382,7 @@ const remEmployee = async () => {
     
     console.log("\nRemove existing employee(s)\n");
 
-    const employeesQuery = `SELECT CONCAT(first_name, " ", last_name) AS manager FROM employee`;
+    const employeesQuery = `SELECT CONCAT(first_name, " ", last_name) AS empFullName FROM employee`;
     const empChoices = await getListQuery(employeesQuery);
 
     inquirer
@@ -382,13 +400,22 @@ const remEmployee = async () => {
             const empFirstName = empFullName[0];
             const empLastName = empFullName[1];
 
-            const getRemEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
-            const remEmpQuery = await getListQuery(getRemEmplId);
-            const empId = remEmpQuery[0].id;
+            if (response.chosenEmp != "None") {
 
-            const deleteEmpMgrQuery = `DELETE FROM employee WHERE id = ${empId};`                
+                const getRemEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
+                const remEmpQuery = await getListQuery(getRemEmplId);
+                const empId = remEmpQuery[0].id;
 
-            runQuery(deleteEmpMgrQuery, false, "deleteEmployee", response.chosenEmp);
+                const deleteEmpMgrQuery = `DELETE FROM employee WHERE id = ${empId};`
+
+                runQuery(deleteEmpMgrQuery, false, "deleteEmployee", response.chosenEmp);
+            }
+            else {
+                sepStart();
+                console.log("No employee was removed");
+                sepEnd();
+                mainPrompt();
+            }
 
         });
 }
