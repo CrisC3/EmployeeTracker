@@ -102,6 +102,12 @@ const mainPrompt = () => {
                     // Calls the const anonymous function
                     updEmployeeMgr();
                     break;
+                
+                case "View All Roles":
+
+                    // Calls the const anonymous function
+                    viewAllRoles();
+                    break;
 
                 case "..Finish":                    
                     
@@ -557,6 +563,10 @@ const updEmployeeMgr = async() => {
                 mainPrompt();
             }
         })
+}
+
+const viewAllRoles = () => {
+    
 }
 
 function dataValidation(input, msg) {
