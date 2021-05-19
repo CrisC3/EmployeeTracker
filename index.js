@@ -373,17 +373,17 @@ const addEmployee = async () => {
                         runQuery(newEmpInsertWithRoleQuery, true, "AddEmployee", empFullName) :
                         runQuery(newEmpInsertNoRoleQuery, true, "AddEmployee", empFullName);
                     
-                    const getMgrIdQuery = `SELECT id FROM employee WHERE first_name LIKE "${mgrFirstName}" AND last_name LIKE "${mgrLastName}";`;
-                    const mgrIdQuery = await getListQuery(getMgrIdQuery);
-                    const mgrId = mgrIdQuery[0].id;
-                    
-                    const getNewEmplId = `SELECT id FROM employee WHERE first_name LIKE "${response.newEmpFirst}" AND last_name LIKE "${response.newEmpLast}" ORDER BY id DESC LIMIT 1;`;
-                    const newEmpQuery = await getListQuery(getNewEmplId);
-                    const empId = newEmpQuery[0].id;
-                    
-                    const updateEmpMgrQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`                
+                        const getMgrIdQuery = `SELECT id FROM employee WHERE first_name LIKE "${mgrFirstName}" AND last_name LIKE "${mgrLastName}";`;
+                        const mgrIdQuery = await getListQuery(getMgrIdQuery);
+                        const mgrId = mgrIdQuery[0].id;
+                        
+                        const getNewEmplId = `SELECT id FROM employee WHERE first_name LIKE "${response.newEmpFirst}" AND last_name LIKE "${response.newEmpLast}" ORDER BY id DESC LIMIT 1;`;
+                        const newEmpQuery = await getListQuery(getNewEmplId);
+                        const empId = newEmpQuery[0].id;
+                        
+                        const updateEmpMgrQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`                
 
-                    runQuery(updateEmpMgrQuery);
+                        runQuery(updateEmpMgrQuery);
                 }
             }
             else {
@@ -490,7 +490,70 @@ const updEmployeeRole = async () => {
 }
 
 const updEmployeeMgr = async() => {
-    
+
+    console.log("\nUpdate existing employee manager\n");
+
+    const employeesQuery = `SELECT CONCAT(first_name, " ", last_name) AS empFullName FROM employee`;
+    const empChoices = await getListQuery(employeesQuery);    
+
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "chosenEmp",
+                message: "Please select the EMPLOYEE you want to assign a manager:",
+                choices: empChoices,
+                loop: false
+            },
+            {
+                type: "list",
+                name: "chosenMgr",
+                message: "Please select the MANAGER for the employee:",
+                choices: empChoices,
+                loop: false
+            }
+        ])
+        .then(async (response) => {
+
+            console.log(response);
+            const chosenEmp = response.chosenEmp;
+            const empFullName = (chosenEmp != "None") ? chosenEmp.split(" ") : [];
+            const empFirstName = empFullName[0];
+            const empLastName = empFullName[1];
+
+            const chosenMgr = response.chosenMgr;
+            const mgrFullName = (chosenMgr != "None") ? chosenMgr.split(" ") : [];
+            const mgrFirstName = mgrFullName[0];
+            const mgrLastName = mgrFullName[1];
+
+            console.log(empFirstName + " " + empLastName);
+            console.log(mgrFirstName + " " + mgrLastName);
+
+            if ((chosenEmp != "None") && (chosenMgr != "None") && (chosenEmp != chosenMgr)) {
+
+                const getEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
+                const getMgrlId = `SELECT id FROM employee WHERE first_name LIKE "${mgrFirstName}" AND last_name LIKE "${mgrLastName}";`;
+                const getEmplIdQuery = await getListQuery(getEmplId);
+                const getMgrlIdQuery = await getListQuery(getMgrlId);
+                const empId = getEmplIdQuery[0].id;
+                const mgrId = getMgrlIdQuery[0].id;
+
+                const updEmpRoleQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`
+
+
+                runQuery(updEmpRoleQuery, false, "updateEmployee", chosenEmp);
+            }
+            else {
+
+                let msg = "No employee was updated";
+                let msgIfSameEmpMgrError = "\nYou chose the same employee as the manager";
+                sepStart();
+                (chosenEmp == chosenMgr) ? msg += msgIfSameEmpMgrError : "";
+                console.log(msg);
+                sepEnd();
+                mainPrompt();
+            }
+        })
 }
 
 function dataValidation(input, msg) {
