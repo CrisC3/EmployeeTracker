@@ -599,27 +599,40 @@ const viewAllRoles = () => {
     runQuery(sqlQuery);
 }
 
-const addRoles = () => {
+const addRoles = async () => {
 
     console.log("\nAdding new role(s)\n");
+
+    const deptQuery = "SELECT name FROM department;";
+    const deptChoices = await getListQuery(deptQuery);
 
     inquirer
         .prompt([
             {
                 type: "input",
-                name: "newRoleTitle",
+                name: "newRoleName",
                 message: "Please enter the new role title:"
             },
             {
                 type: "input",
                 name: "newRoleSalary",
                 message: "Please enter the new role salary (number only, no comma/dollar symbols):"
+            },
+            {
+                type: "list",
+                name: "newRoleDept",
+                message: "Please set the new role department:",
+                choices: deptChoices
             }
         ])
         .then((response) => {
 
+            const newRoleName = response.newRoleName;
+            const newRoleSalary = response.newRoleSalary;
+            const newRoleDept = response.newRoleDept;
             console.log(response);
-            mainPrompt();
+            
+
         });
 
 }
