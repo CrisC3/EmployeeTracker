@@ -489,6 +489,10 @@ const updEmployeeRole = async () => {
         })
 }
 
+const updEmployeeMgr = async() => {
+    
+}
+
 function dataValidation(input, msg) {
     
     if (input)
