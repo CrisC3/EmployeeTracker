@@ -7,10 +7,12 @@ const asEmpFirstName = `first_name AS "[Emp. First Name]"`;
 const asEmpLastName = `last_name AS "[Emp. Last Name]"`;
 const asEmpRoleTitle = `title AS "[Emp. Role/Title]"`;
 const asDeptName = `name AS "[Emp. Department]"`;
-const asSalary = `"[Salary]"`;
+const asEmpSalary = `"[Emp. Salary]"`;
 const asManager = `"[Manager Name]"`;
 const asRoleId = `id AS "[Role ID]"`;
 const asRoleTitle = `title AS "[Role Title]"`;
+const asRoleSalary = `"[Role Salary]"`;
+const asRoleDeptName = `name AS "[Role Dept. Name]"`;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -235,7 +237,7 @@ const viewAllEmployees = () => {
         emp.${asEmpLastName},
         role.${asEmpRoleTitle},
         department.${asDeptName},
-        CONCAT("$ ", FORMAT(role.salary, 2)) AS ${asSalary},
+        CONCAT("$ ", FORMAT(role.salary, 2)) AS ${asEmpSalary},
         IFNULL(CONCAT(mgr.first_name, " ", mgr.last_name), "(N/A)") AS ${asManager}
     FROM
         employee AS emp
@@ -573,9 +575,15 @@ const viewAllRoles = () => {
     const sqlQuery = 
     `SELECT 
         rol.${asRoleId},
-        rol.${asRoleTitle}
+        rol.${asRoleTitle},
+        CONCAT("$ ", FORMAT(rol.salary, 2)) AS ${asRoleSalary},
+        dept.${asRoleDeptName}
     FROM
-        role rol`;
+        role rol
+    INNER JOIN department dept ON
+        rol.department_id = dept.id
+    ORDER BY
+        rol.id`;
     
     runQuery(sqlQuery);
 }
