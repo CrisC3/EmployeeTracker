@@ -224,6 +224,15 @@ async function getListQuery(sqlQuery, exclude) {
                 sqlList.push(element.empFullName);
             });            
         }
+        else if (newData[0].hasOwnProperty("name")) {
+
+            console.log("Inside of name");
+            
+            newData.forEach(element => {
+                
+                sqlList.push(element.name);
+            });            
+        }
         else {
             sqlList.push(newData[0]);
         }
