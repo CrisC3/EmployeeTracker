@@ -661,10 +661,9 @@ const addRoles = async () => {
 
                 let msgMain = "No role was added";
                 let msgNoName = "\nThere was no role name set";
-                let msgNoSalary = "\nThere was no role salary set";
 
                 sepStart();
-                // ()
+                (newRoleName.length == 0) ? msgMain += msgNoName : "";
                 console.log(msgMain);
                 sepEnd();
                 mainPrompt();
