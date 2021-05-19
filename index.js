@@ -96,6 +96,11 @@ const mainPrompt = () => {
                     updEmployeeRole();
                     break;
 
+                case "Update Employee Manager":
+
+                    updEmployeeMgr();
+                    break;
+
                 case "..Finish":                    
                     
                     // Checks if the MySQL connection is
