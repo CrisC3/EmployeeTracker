@@ -145,7 +145,7 @@ function runQuery(sqlQueryData, returnToCall, queryType, info) {
         if (sqlQueryData.substring(0, 6) == "SELECT") {
                 console.table(res);
         }
-        else if (sqlQueryData.substring(0, 6) == "INSERT" && (queryType == "AddEmployee")) {
+        else if (sqlQueryData.substring(0, 6) == "INSERT" && ((queryType == "AddEmployee") || (queryType == "AddRole"))) {
             sepStart();
             console.log(`Added "${info}" to the database`);
             sepEnd();
@@ -369,7 +369,7 @@ const addEmployee = async () => {
                             (SELECT id FROM role WHERE title LIKE "${response.newEmpRole}")
                         );`;
                         
-                    runQuery(sqlQuery, false, "AddEmployee", empFullName);
+                    runQuery(sqlQuery, false, "AddEmployee", `${empFullName} [EMPLOYEE]`);
                 }
                 else if ((response.newEmpMgr == "None") && (response.newEmpRole == "None")) {
                     
@@ -381,7 +381,7 @@ const addEmployee = async () => {
                             "${response.newEmpLast}"
                         );`;
                         
-                    runQuery(sqlQuery, false, "AddEmployee", empFullName);
+                    runQuery(sqlQuery, false, "AddEmployee", `${empFullName} [EMPLOYEE]`);
                 }
                 else {
                     
@@ -402,8 +402,8 @@ const addEmployee = async () => {
                         );`;
                         
                         (response.newEmpRole != "None") ? 
-                        runQuery(newEmpInsertWithRoleQuery, true, "AddEmployee", empFullName) :
-                        runQuery(newEmpInsertNoRoleQuery, true, "AddEmployee", empFullName);
+                        runQuery(newEmpInsertWithRoleQuery, true, "AddEmployee", `${empFullName} [EMPLOYEE]`) :
+                        runQuery(newEmpInsertNoRoleQuery, true, "AddEmployee", `${empFullName} [EMPLOYEE]`);
                     
                         const getMgrIdQuery = `SELECT id FROM employee WHERE first_name LIKE "${mgrFirstName}" AND last_name LIKE "${mgrLastName}";`;
                         const mgrIdQuery = await getListQuery(getMgrIdQuery);
@@ -445,11 +445,12 @@ const remEmployee = async () => {
         ])
         .then(async (response) => {
 
-            const empFullName = (response.chosenEmp != "None") ? response.chosenEmp.split(" ") : [];
+            const chosenEmp = response.chosenEmp;
+            const empFullName = (chosenEmp != "None") ? chosenEmp.split(" ") : [];
             const empFirstName = empFullName[0];
             const empLastName = empFullName[1];
 
-            if (response.chosenEmp != "None") {
+            if (chosenEmp != "None") {
 
                 const getRemEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
                 const remEmpQuery = await getListQuery(getRemEmplId);
@@ -457,7 +458,7 @@ const remEmployee = async () => {
 
                 const deleteEmpMgrQuery = `DELETE FROM employee WHERE id = ${empId};`
 
-                runQuery(deleteEmpMgrQuery, false, "deleteEmployee", response.chosenEmp);
+                runQuery(deleteEmpMgrQuery, false, "deleteEmployee", `${chosenEmp} [EMPLOYEE]`);
             }
             else {
                 sepStart();
@@ -495,14 +496,16 @@ const updEmployeeRole = async () => {
         ])
         .then(async (response) => {
 
-            const empFullName = (response.chosenEmp != "None") ? response.chosenEmp.split(" ") : [];
+            const chosenEmp = response.chosenEmp;
+            const chosenRole = response.chosenRole;
+            const empFullName = (chosenEmp != "None") ? chosenEmp.split(" ") : [];
             const empFirstName = empFullName[0];
             const empLastName = empFullName[1];
 
-            if (response.chosenEmp != "None") {
+            if (chosenEmp != "None") {
 
                 const getUpdEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
-                const getRoleId = `SELECT id FROM role WHERE title LIKE "${response.chosenRole}";`;
+                const getRoleId = `SELECT id FROM role WHERE title LIKE "${chosenRole}";`;
                 const updEmpQuery = await getListQuery(getUpdEmplId);
                 const updRoleQuery = await getListQuery(getRoleId);
                 const empId = updEmpQuery[0].id;
@@ -510,7 +513,7 @@ const updEmployeeRole = async () => {
 
                 const updEmpRoleQuery = `UPDATE employee SET role_id = ${roleId} WHERE id = ${empId};`
 
-                runQuery(updEmpRoleQuery, false, "updateEmployee", response.chosenEmp);
+                runQuery(updEmpRoleQuery, false, "updateEmployee", `${chosenEmp} [EMPLOYEE]`);
             }
             else {
                 sepStart();
@@ -574,7 +577,7 @@ const updEmployeeMgr = async() => {
                 const updEmpRoleQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`
 
 
-                runQuery(updEmpRoleQuery, false, "updateEmployee", chosenEmp);
+                runQuery(updEmpRoleQuery, false, "updateEmployee", `${chosenEmp} [EMPLOYEE]`);
             }
             else {
 
@@ -623,7 +626,7 @@ const addRoles = async () => {
                 message: "Please enter the new role title:"
             },
             {
-                type: "input",
+                type: "number",
                 name: "newRoleSalary",
                 message: "Please enter the new role salary (number only, no comma/dollar symbols):"
             },
@@ -637,9 +640,35 @@ const addRoles = async () => {
         .then((response) => {
 
             const newRoleName = response.newRoleName;
-            const newRoleSalary = response.newRoleSalary;
+            const newRoleSalary = (typeof response.newRoleSalary === "number") ? (!(isNaN(response.newRoleSalary)) ? response.newRoleSalary : 0) : 0;
             const newRoleDept = response.newRoleDept;
-            console.log(response);
+            
+            if ((newRoleName.length > 0) && (newRoleDept != "None")) {
+
+                const sqlQuery =
+                        `INSERT INTO role (title, salary, department_id)
+                        VALUES
+                        (
+                            "${newRoleName}",
+                            "${newRoleSalary}",
+                            (SELECT id FROM department WHERE name LIKE "${newRoleDept}")
+                        );`;
+                        
+                runQuery(sqlQuery, false, "AddRole", `${newRoleName} [ROLE]`);
+
+            }
+            else {
+
+                let msgMain = "No role was added";
+                let msgNoName = "\nThere was no role name set";
+                let msgNoSalary = "\nThere was no role salary set";
+
+                sepStart();
+                // ()
+                console.log(msgMain);
+                sepEnd();
+                mainPrompt();
+            }
             
 
         });
