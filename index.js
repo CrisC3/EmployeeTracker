@@ -595,7 +595,9 @@ const viewAllRoles = () => {
 }
 
 const addAllRoles = () => {
-    
+
+    console.log("\nAdding new role(s)\n");
+
 }
 
 function dataValidation(input, msg) {
