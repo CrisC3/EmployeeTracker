@@ -698,6 +698,7 @@ const remRoles = async () => {
         ])
         .then(async (response) => {
             console.log(response);
+            const chosenRole = response.remRole;
         })
 
 }
