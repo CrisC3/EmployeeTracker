@@ -603,6 +603,25 @@ const addRoles = () => {
 
     console.log("\nAdding new role(s)\n");
 
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "newRoleTitle",
+                message: "Please enter the new role title:"
+            },
+            {
+                type: "input",
+                name: "newRoleSalary",
+                message: "Please enter the new role salary (number only, no comma/dollar symbols):"
+            }
+        ])
+        .then((response) => {
+
+            console.log(response);
+            mainPrompt();
+        });
+
 }
 
 function dataValidation(input, msg) {
