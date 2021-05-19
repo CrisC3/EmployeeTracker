@@ -112,6 +112,12 @@ const mainPrompt = () => {
                     // Calls the const anonymous function
                     viewAllRoles();
                     break;
+                
+                case "Add Role":
+
+                    // Calls the const anonymous function
+                    addAllRoles();
+                    break;
 
                 case "..Finish":                    
                     
@@ -586,6 +592,10 @@ const viewAllRoles = () => {
         rol.id`;
     
     runQuery(sqlQuery);
+}
+
+const addAllRoles = () => {
+    
 }
 
 function dataValidation(input, msg) {
