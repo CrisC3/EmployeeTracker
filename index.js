@@ -437,19 +437,50 @@ const updEmployeeRole = async () => {
     console.log("\nUpdate existing employee title/role\n");
 
     const employeesQuery = `SELECT CONCAT(first_name, " ", last_name) AS empFullName FROM employee`;
+    const roleQuery = `SELECT title FROM role`;
     const empChoices = await getListQuery(employeesQuery);
+    const roleChoices = await getListQuery(roleQuery);
 
     inquirer
         .prompt([
             {
                 type: "list",
                 name: "chosenEmp",
-                message: "Please select the employee you want to remove:",
+                message: "Please select the employee you want to update title/role:",
                 choices: empChoices
+            },
+            {
+                type: "list",
+                name: "chosenRole",
+                message: "Please select the title/role for the employee:",
+                choices: roleChoices
             }
         ])
         .then(async (response) => {
-            
+
+            const empFullName = (response.chosenEmp != "None") ? response.chosenEmp.split(" ") : [];
+            const empFirstName = empFullName[0];
+            const empLastName = empFullName[1];
+
+            if (response.chosenEmp != "None") {
+
+                const getUpdEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
+                const getRoleId = `SELECT id FROM role WHERE title LIKE "${response.chosenRole}";`;
+                const updEmpQuery = await getListQuery(getUpdEmplId);
+                const updRoleQuery = await getListQuery(getRoleId);
+                const empId = updEmpQuery[0].id;
+                const roleId = updRoleQuery[0].id;
+
+                const updEmpRoleQuery = `UPDATE employee SET role_id = ${roleId} WHERE id = ${empId};`
+
+                runQuery(updEmpRoleQuery, false, "updateEmployee", response.chosenEmp);
+            }
+            else {
+                sepStart();
+                console.log("No employee was updated");
+                sepEnd();
+                mainPrompt();
+            }
         })
 }
 
