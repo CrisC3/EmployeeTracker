@@ -684,15 +684,15 @@ const remRoles = async () => {
 
     console.log("\nRemoving role(s)\n");
 
-    const deptQuery = "SELECT name FROM department;";
+    const deptQuery = "SELECT title FROM role;";
     const deptChoices = await getListQuery(deptQuery);
 
     inquirer
         .prompt([
             {
                 type: "list",
-                name: "newRoleDept",
-                message: "Please select a role department to delete:",
+                name: "remRole",
+                message: "Please select a role to delete:",
                 choices: deptChoices
             }
         ])
