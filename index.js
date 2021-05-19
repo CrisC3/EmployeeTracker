@@ -566,7 +566,15 @@ const updEmployeeMgr = async() => {
 }
 
 const viewAllRoles = () => {
+    console.log("\nQuerying for all titles/roles\n");
     
+    const sqlQuery = 
+    `SELECT 
+        *
+    FROM
+        role`;
+    
+    runQuery(sqlQuery);
 }
 
 function dataValidation(input, msg) {
