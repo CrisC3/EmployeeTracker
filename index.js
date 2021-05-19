@@ -432,6 +432,14 @@ const remEmployee = async () => {
         });
 }
 
+const updEmployeeRole = async () => {
+
+    console.log("\nUpdate existing employee title/role\n");
+
+    const employeesQuery = `SELECT CONCAT(first_name, " ", last_name) AS empFullName FROM employee`;
+    const empChoices = await getListQuery(employeesQuery);
+}
+
 function dataValidation(input, msg) {
     
     if (input)
