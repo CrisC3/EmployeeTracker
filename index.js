@@ -89,6 +89,12 @@ const mainPrompt = () => {
                     // Calls the const anonymous function
                     remEmployee();
                     break;
+                
+                case "Update Employee Role":
+
+                    // Calls the const anonymous function
+                    updEmployeeRole();
+                    break;
 
                 case "..Finish":                    
                     
