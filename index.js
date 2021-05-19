@@ -118,6 +118,12 @@ const mainPrompt = () => {
                     // Calls the const anonymous function
                     addRoles();
                     break;
+            
+                case "Remove Role":
+
+                    // Calls the const anonymous function
+                    remRoles();
+                    break;
 
                 case "..Finish":                    
                     
@@ -671,6 +677,12 @@ const addRoles = async () => {
             
 
         });
+
+}
+
+const remRoles = async () => {
+
+    console.log("\nRemoving role(s)\n");
 
 }
 
