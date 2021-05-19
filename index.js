@@ -116,7 +116,7 @@ const mainPrompt = () => {
                 case "Add Role":
 
                     // Calls the const anonymous function
-                    addAllRoles();
+                    addRoles();
                     break;
 
                 case "..Finish":                    
@@ -594,7 +594,7 @@ const viewAllRoles = () => {
     runQuery(sqlQuery);
 }
 
-const addAllRoles = () => {
+const addRoles = () => {
 
     console.log("\nAdding new role(s)\n");
 
