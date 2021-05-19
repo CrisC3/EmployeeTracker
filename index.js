@@ -438,6 +438,19 @@ const updEmployeeRole = async () => {
 
     const employeesQuery = `SELECT CONCAT(first_name, " ", last_name) AS empFullName FROM employee`;
     const empChoices = await getListQuery(employeesQuery);
+
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "chosenEmp",
+                message: "Please select the employee you want to remove:",
+                choices: empChoices
+            }
+        ])
+        .then(async (response) => {
+            
+        })
 }
 
 function dataValidation(input, msg) {
