@@ -152,7 +152,12 @@ function runQuery(sqlQueryData, returnToCall, queryType, info) {
         }
         else if (sqlQueryData.substring(0, 6) == "DELETE" && (queryType == "deleteEmployee")) {
             sepStart();
-            console.log(`Remove "${info}" from the database`);
+            console.log(`Removed "${info}" from the database`);
+            sepEnd();
+        }
+        else if (sqlQueryData.substring(0, 6) == "UPDATE" && (queryType == "updateEmployee")) {
+            sepStart();
+            console.log(`Updated "${info}" in the database`);
             sepEnd();
         }
         
