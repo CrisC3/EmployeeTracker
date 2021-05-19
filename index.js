@@ -53,7 +53,8 @@ const mainPrompt = () => {
                     "Add department",
                     "Remove department",
                     "Update department",
-                    "..Finish"]
+                    "..Finish"],
+                loop: false
             }
         ])
         .then((response) => {
