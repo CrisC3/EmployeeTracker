@@ -5,10 +5,12 @@ const cTable = require("console.table");
 const asEmpId = `id AS "[Employee ID]"`;
 const asEmpFirstName = `first_name AS "[Emp. First Name]"`;
 const asEmpLastName = `last_name AS "[Emp. Last Name]"`;
-const asRoleTitle = `title AS "[Title]"`;
-const asDeptName = `name AS "[Department]"`;
+const asEmpRoleTitle = `title AS "[Emp. Role/Title]"`;
+const asDeptName = `name AS "[Emp. Department]"`;
 const asSalary = `"[Salary]"`;
 const asManager = `"[Manager Name]"`;
+const asRoleId = `id AS "[Role ID]"`;
+const asRoleTitle = `title AS "[Role Title]"`;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -231,7 +233,7 @@ const viewAllEmployees = () => {
         emp.${asEmpId},
         emp.${asEmpFirstName},
         emp.${asEmpLastName},
-        role.${asRoleTitle},
+        role.${asEmpRoleTitle},
         department.${asDeptName},
         CONCAT("$ ", FORMAT(role.salary, 2)) AS ${asSalary},
         IFNULL(CONCAT(mgr.first_name, " ", mgr.last_name), "(N/A)") AS ${asManager}
@@ -570,9 +572,10 @@ const viewAllRoles = () => {
     
     const sqlQuery = 
     `SELECT 
-        *
+        rol.${asRoleId},
+        rol.${asRoleTitle}
     FROM
-        role`;
+        role rol`;
     
     runQuery(sqlQuery);
 }
