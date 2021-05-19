@@ -99,6 +99,7 @@ const mainPrompt = () => {
 
                 case "Update Employee Manager":
 
+                    // Calls the const anonymous function
                     updEmployeeMgr();
                     break;
 
@@ -530,14 +531,15 @@ const updEmployeeMgr = async() => {
             console.log(empFirstName + " " + empLastName);
             console.log(mgrFirstName + " " + mgrLastName);
 
-            if ((chosenEmp != "None") && (chosenMgr != "None") && (chosenEmp != chosenMgr)) {
+            // if ((chosenEmp != "None") && (chosenMgr != "None") && (chosenEmp != chosenMgr)) {
+            if ((chosenEmp != "None") && (chosenEmp != chosenMgr)) {
 
                 const getEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
                 const getMgrlId = `SELECT id FROM employee WHERE first_name LIKE "${mgrFirstName}" AND last_name LIKE "${mgrLastName}";`;
                 const getEmplIdQuery = await getListQuery(getEmplId);
-                const getMgrlIdQuery = await getListQuery(getMgrlId);
+                const getMgrlIdQuery = (chosenMgr != "None") ? await getListQuery(getMgrlId) : null;
                 const empId = getEmplIdQuery[0].id;
-                const mgrId = getMgrlIdQuery[0].id;
+                const mgrId = (getMgrlIdQuery != null) ? getMgrlIdQuery[0].id : null;
 
                 const updEmpRoleQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`
 
