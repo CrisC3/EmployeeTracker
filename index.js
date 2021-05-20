@@ -171,7 +171,7 @@ function runQuery(sqlQueryData, returnToCall, queryType, info) {
         if (sqlQueryData.substring(0, 6) == "SELECT") {
                 console.table(res);
         }
-        else if (sqlQueryData.substring(0, 6) == "INSERT" && ((queryType == "AddEmployee") || (queryType == "AddRole"))) {
+        else if (sqlQueryData.substring(0, 6) == "INSERT" && ((queryType == "AddEmployee") || (queryType == "AddRole") || (queryType == "AddDept"))) {
             sepStart();
             console.log(`Added "${info}" to the database`);
             sepEnd();
@@ -844,8 +844,7 @@ const addDept = async () => {
             const deptExistName = checkIfDeptExists[0];
 
             if ((newDeptName.length > 0) && (newDeptName != deptExistName)) {
-                console.log("The new department name is " + newDeptName);
-
+                
                 const sqlQuery =
                         `INSERT INTO department (name)
                         VALUES
