@@ -720,7 +720,7 @@ const remRoles = async () => {
 
                 const deleteRoleQuery = `DELETE FROM role WHERE id = ${roleId};`
 
-                runQuery(deleteRoleQuery, false, "deleteEmployee", `${chosenRole} [ROLE]`);
+                runQuery(deleteRoleQuery, false, "deleteRole", `${chosenRole} [ROLE]`);
             }
         })
 
@@ -736,7 +736,7 @@ const updRoles = async () => {
     inquirer
         .prompt([
             {
-                type: "input",
+                type: "list",
                 name: "updRole",
                 message: "Please select a role to update:",
                 choices: roleChoices
@@ -744,30 +744,33 @@ const updRoles = async () => {
             {
                 type: "input",
                 name: "updRoleTitle",
-                message: "Please enter the new role name (optional - skip leave blank):"
+                message: "Please enter an updated role name:"
             },
             {
                 type: "number",
                 name: "updRoleSalary",
-                message: "Please enter the new role salary (optional - skip leave blank):"
+                message: "Please enter an updated role salary (If blank, will use the current salary):"
             }
         ])
-        .then((response) => {
+        .then(async (response) => {
             
             console.log(response);
 
             const chosenRole = response.updRole;
             const roleTitle = response.updRoleTitle;
-            const roleSalary = response.updRoleSalary;
+            const roleSalaryQuery = `SELECT salary FROM role WHERE title LIKE "${chosenRole}"`;
+            const roleSalaryCheck = (!(isNaN(response.updRoleSalary))) ? response.updRoleSalary : await getListQuery(roleSalaryQuery);
+            const roleSalary = (roleSalaryCheck.length > 0) ? roleSalaryCheck[0].salary : roleSalaryCheck;
 
-            if ((chosenRole != "None")) {
-                
+            if ((chosenRole != "None") && (roleTitle.length > 0)) {
+
                 const getRoleId = `SELECT id FROM role WHERE title LIKE "${chosenRole}";`;
                 const runRoleQuery = await getListQuery(getRoleId);
+                const roleId = runRoleQuery[0].id;
 
-                const updateRoleQuery = `UPDATE role SET  WHERE id = ${roleId};`
+                const updateRoleQuery = `UPDATE role SET title = "${roleTitle}", salary = ${roleSalary} WHERE id = ${roleId};`
 
-                // runQuery(updateRoleQuery, false, "deleteEmployee", `${chosenRole} [ROLE]`);
+                runQuery(updateRoleQuery, false, "updateRole", `${chosenRole} [ROLE]`);
 
             }
             else {
