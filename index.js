@@ -686,10 +686,7 @@ const addRoles = async () => {
                 sepEnd();
                 mainPrompt();
             }
-            
-
         });
-
 }
 
 const remRoles = async () => {
@@ -709,7 +706,7 @@ const remRoles = async () => {
             }
         ])
         .then(async (response) => {
-            console.log(response);
+            
             const chosenRole = response.remRole;
 
             if (chosenRole != "None") {
@@ -721,6 +718,15 @@ const remRoles = async () => {
                 const deleteRoleQuery = `DELETE FROM role WHERE id = ${roleId};`
 
                 runQuery(deleteRoleQuery, false, "deleteRole", `${chosenRole} [ROLE]`);
+            }
+            else {
+
+                let msgMain = "No role was removed\nThere was no role selected";
+                
+                sepStart();
+                console.log(msgMain);
+                sepEnd();
+                mainPrompt();
             }
         })
 
@@ -749,18 +755,16 @@ const updRoles = async () => {
             {
                 type: "number",
                 name: "updRoleSalary",
-                message: "Please enter an updated role salary (If blank, will use the current salary):"
+                message: "Please enter an updated role salary:"
             }
         ])
         .then(async (response) => {
             
-            console.log(response);
-
             const chosenRole = response.updRole;
             const roleTitle = response.updRoleTitle;
             const roleSalaryQuery = `SELECT salary FROM role WHERE title LIKE "${chosenRole}"`;
-            const roleSalaryCheck = (!(isNaN(response.updRoleSalary))) ? response.updRoleSalary : await getListQuery(roleSalaryQuery);
-            const roleSalary = (roleSalaryCheck.length > 0) ? roleSalaryCheck[0].salary : roleSalaryCheck;
+            const roleSalaryCheck = (!(isNaN(response.updRoleSalary))) ? response.updRoleSalary : ((roleTitle.length > 0) ? await getListQuery(roleSalaryQuery) : 0);
+            const roleSalary = ((roleSalaryCheck.length > 0)) ? roleSalaryCheck[0].salary : roleSalaryCheck;
 
             if ((chosenRole != "None") && (roleTitle.length > 0)) {
 
@@ -774,7 +778,16 @@ const updRoles = async () => {
 
             }
             else {
-                console.log("No role update");
+
+                let msgMain = "No role was selected";
+                const msgNoRoleUpdName = "\nNo updated title was set";
+                
+
+                sepStart();
+                (roleTitle.length == 0) ? msgMain += msgNoRoleUpdName : "";
+                console.log(msgMain);
+                sepEnd();
+                mainPrompt();
             }
             
         })
