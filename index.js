@@ -818,7 +818,6 @@ const updRoles = async () => {
                 let msgMain = "No role was selected";
                 const msgNoRoleUpdName = "\nNo updated title was set";
                 
-
                 sepStart();
                 (roleTitle.length == 0) ? msgMain += msgNoRoleUpdName : "";
                 console.log(msgMain);
@@ -987,8 +986,18 @@ const updDept = async () => {
                 runQuery(updDeptQuery, false, "updateDept", `${updChosenDept} => ${newDeptName} [DEPARTMENT]`);
             
             }
+            else {
 
-            process.exit(0);
+                let msgMain = "No department was selected";
+                const msgNoDeptUpdName = "\nNo updated department name was set";
+                
+                sepStart();
+                (newDeptName.length == 0) ? msgMain += msgNoDeptUpdName : "";
+                console.log(msgMain);
+                sepEnd();
+                mainPrompt();
+
+            }
         })
 }
 
