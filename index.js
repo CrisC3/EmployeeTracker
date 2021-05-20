@@ -146,6 +146,12 @@ const mainPrompt = () => {
                     addDept();
                     break;
                 
+                case "Remove department":
+
+                    // Calls the const anonymous function
+                    remDept();
+                    break;
+                
                 case ">> Clear screen <<":
 
                     console.clear();
@@ -875,6 +881,11 @@ const addDept = async () => {
                 mainPrompt();
             }
         })
+}
+
+const remDept = async () => {
+
+    console.log("\nRemove department(s)\n");
 }
 
 function dataValidation(input, msg) {
