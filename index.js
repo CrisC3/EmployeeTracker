@@ -267,6 +267,8 @@ async function getListQuery(sqlQuery, exclude) {
         else if ((newData.length > 0) && (newData[0].hasOwnProperty("name"))) {
 
             console.log("Inside of NAME");
+
+            sqlList.push("None");
             
             newData.forEach(element => {
                 
@@ -887,8 +889,29 @@ const remDept = async () => {
 
     console.log("\nRemove department(s)\n");
 
-    const deptQuery = "SELECT name FROM department;";
+    const deptQuery = "SELECT dept.name FROM department dept LEFT JOIN role rol ON dept.id = rol.department_id WHERE rol.department_id IS NULL;";
     const deptChoices = await getListQuery(deptQuery);
+
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "remDept",
+                message: "Please select the department to remove\n(NOTE: You can only see departments that have no roles,\nin order to fully remove a department,\nneed to remove the department assign to roles/titles):",
+                choices: deptChoices
+            }
+        ])
+        .then((response) => {
+            
+            console.log(response);
+            // const remDept = response.remDept;
+
+            // if (remDept != "None") {
+            //     console.log(remDept);
+            // }
+
+            process.exit(0);
+        });
 }
 
 function dataValidation(input, msg) {
