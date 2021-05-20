@@ -199,30 +199,31 @@ async function getListQuery(sqlQuery, exclude) {
 
         console.log("=== newData output for testing [START] ===\n");
         console.log(newData);
+        console.log("newData.length = " + newData.length);
         console.log("\n=== newData output for testing [END] ===");
 
-        if (newData[0].hasOwnProperty("title")) {
+        if ((newData.length > 0) && (newData[0].hasOwnProperty("title"))) {
 
             console.log("Inside of TITLE");
-            sqlList.push("None");
+            
+            (newData.length > 1) ? sqlList.push("None") : "";
 
             newData.forEach(element => {
                 sqlList.push(element.title);
             });
         }
-        else if (newData[0].hasOwnProperty("manager")) {
+        else if ((newData.length > 0) && (newData[0].hasOwnProperty("manager"))) {
 
             console.log("Inside of MANAGER");
             sqlList.push("None");
 
             newData.forEach(element => {
-                
                 sqlList.push(element.manager);
             });
         }
-        else if (newData[0].hasOwnProperty("empFullName")) {
+        else if ((newData.length > 0) && (newData[0].hasOwnProperty("empFullName"))) {
 
-            console.log("Inside of empFullName");
+            console.log("Inside of EMPFULLNAME");
             sqlList.push("None");
 
             newData.forEach(element => {
@@ -230,9 +231,9 @@ async function getListQuery(sqlQuery, exclude) {
                 sqlList.push(element.empFullName);
             });            
         }
-        else if (newData[0].hasOwnProperty("name")) {
+        else if ((newData.length > 0) && (newData[0].hasOwnProperty("name"))) {
 
-            console.log("Inside of name");
+            console.log("Inside of NAME");
             
             newData.forEach(element => {
                 
@@ -643,13 +644,16 @@ const addRoles = async () => {
                 choices: deptChoices
             }
         ])
-        .then((response) => {
+        .then(async (response) => {
 
             const newRoleName = response.newRoleName;
             const newRoleSalary = (typeof response.newRoleSalary === "number") ? (!(isNaN(response.newRoleSalary)) ? response.newRoleSalary : 0) : 0;
             const newRoleDept = response.newRoleDept;
+            const queryIfRoleExists = `SELECT title FROM role WHERE title LIKE "${newRoleName}";`
+            const checkIfRoleExists = await getListQuery(queryIfRoleExists);
+            const roleExistName = checkIfRoleExists[0];
             
-            if ((newRoleName.length > 0) && (newRoleDept != "None")) {
+            if ((newRoleName.length > 0) && (newRoleDept != "None") && (newRoleName != roleExistName)) {
 
                 const sqlQuery =
                         `INSERT INTO role (title, salary, department_id)
@@ -666,10 +670,12 @@ const addRoles = async () => {
             else {
 
                 let msgMain = "No role was added";
-                let msgNoName = "\nThere was no role name set";
+                const msgNoName = "\nThere was no role name set";
+                const msgDupRole = `\nThere exists a role name of "${newRoleName}"`;
 
                 sepStart();
                 (newRoleName.length == 0) ? msgMain += msgNoName : "";
+                (newRoleName == roleExistName) ? msgMain += msgDupRole : "";
                 console.log(msgMain);
                 sepEnd();
                 mainPrompt();
