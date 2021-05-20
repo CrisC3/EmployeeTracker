@@ -953,8 +953,43 @@ const updDept = async () => {
     const deptQuery = "SELECT name FROM department;";
     const deptChoices = await getListQuery(deptQuery);
 
-    process.exit(0);
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "updDept",
+                message: "Please select the department to update:",
+                choices: deptChoices
+            },
+            {
+                type: "input",
+                name: "updDeptName",
+                message: "Please enter the department new name:"
+            }
+        ])
+        .then(async (response) => {
 
+            console.log("RESPONSE-v");
+            console.log(response);
+            console.log("RESPONSE-^");
+
+            const updChosenDept = response.updDept;
+            const newDeptName = response.updDeptName;
+
+            if ((updChosenDept != "None") && (newDeptName.length > 0)) {
+
+                const getUpdDeptId = `SELECT id FROM department WHERE name LIKE "${updChosenDept}";`;
+                const updDeptIdQuery = await getListQuery(getUpdDeptId);
+                const deptId = updDeptIdQuery[0].id;
+
+                const updDeptQuery = `UPDATE department SET name = "${newDeptName}" WHERE id = ${deptId};`;
+
+                runQuery(updDeptQuery, false, "updateDept", `${updChosenDept} => ${newDeptName} [DEPARTMENT]`);
+            
+            }
+
+            process.exit(0);
+        })
 }
 
 //#region Line separators
