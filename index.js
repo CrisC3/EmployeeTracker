@@ -139,7 +139,7 @@ const mainPrompt = () => {
                     viewAllDept();
                     break;
 
-                case "..Finish":                    
+                default:                    
                     
                     // Checks if the MySQL connection is
                     // connected before exiting application
