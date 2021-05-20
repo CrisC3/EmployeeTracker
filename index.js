@@ -838,20 +838,22 @@ const addDept = async () => {
         ])
         .then(async (response) => {
 
-            console.log(response);
-
             const newDeptName = response.newDeptName;
             const queryIfDeptExists = `SELECT name FROM department WHERE name LIKE "${newDeptName}";`
             const checkIfDeptExists = await getListQuery(queryIfDeptExists);
             const deptExistName = checkIfDeptExists[0];
 
-            console.log("********************************");
-            console.log(checkIfDeptExists);
-            console.log(deptExistName);
-            console.log("********************************");
-
             if ((newDeptName.length > 0) && (newDeptName != deptExistName)) {
                 console.log("The new department name is " + newDeptName);
+
+                const sqlQuery =
+                        `INSERT INTO department (name)
+                        VALUES
+                        (
+                            "${newDeptName}"
+                        );`;
+                        
+                runQuery(sqlQuery, false, "AddDept", `${newDeptName} [DEPARTMENT]`);
             }
             else {
                 
@@ -864,10 +866,8 @@ const addDept = async () => {
                 (newDeptName == deptExistName) ? msgMain += msgDupRole : "";
                 console.log(msgMain);
                 sepEnd();
-                // mainPrompt();
+                mainPrompt();
             }
-
-            process.exit(0);
         })
 }
 
