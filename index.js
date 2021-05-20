@@ -124,6 +124,12 @@ const mainPrompt = () => {
                     // Calls the const anonymous function
                     remRoles();
                     break;
+                
+                case "Update Role":
+
+                    // Calls the const anonymous function
+                    updRoles();
+                    break;
 
                 case "..Finish":                    
                     
@@ -718,6 +724,27 @@ const remRoles = async () => {
             }
         })
 
+}
+
+const updRoles = async () => {
+    
+    console.log("\nUpdating role(s)\n");
+
+    const roleQuery = "SELECT title FROM role;";
+    const roleChoices = await getListQuery(deptQuery);
+
+    inquirer
+        .prompt([
+            {
+                type: "list",
+                name: "updRole",
+                message: "Please select a role to update:",
+                choices: roleChoices
+            }
+        ])
+        .then((response) => {
+            console.log(response);
+        })
 }
 
 function dataValidation(input, msg) {
