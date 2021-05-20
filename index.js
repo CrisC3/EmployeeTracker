@@ -886,6 +886,9 @@ const addDept = async () => {
 const remDept = async () => {
 
     console.log("\nRemove department(s)\n");
+
+    const deptQuery = "SELECT name FROM department;";
+    const deptChoices = await getListQuery(deptQuery);
 }
 
 function dataValidation(input, msg) {
