@@ -130,6 +130,12 @@ const mainPrompt = () => {
                     // Calls the const anonymous function
                     updRoles();
                     break;
+                
+                case "View all departments":
+
+                    // Calls the const anonymous function
+                    viewAllDept();
+                    break;
 
                 case "..Finish":                    
                     
@@ -791,6 +797,15 @@ const updRoles = async () => {
             }
             
         })
+}
+
+const viewAllDept = async () => {
+
+    console.log("\nQuerying for all departments\n");
+
+    const deptQuery = "SELECT name FROM department;";
+    const deptChoices = await getListQuery(deptQuery);
+
 }
 
 function dataValidation(input, msg) {
