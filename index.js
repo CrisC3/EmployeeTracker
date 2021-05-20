@@ -736,14 +736,44 @@ const updRoles = async () => {
     inquirer
         .prompt([
             {
-                type: "list",
+                type: "input",
                 name: "updRole",
                 message: "Please select a role to update:",
                 choices: roleChoices
+            },
+            {
+                type: "input",
+                name: "updRoleTitle",
+                message: "Please enter the new role name (optional - skip leave blank):"
+            },
+            {
+                type: "number",
+                name: "updRoleSalary",
+                message: "Please enter the new role salary (optional - skip leave blank):"
             }
         ])
         .then((response) => {
+            
             console.log(response);
+
+            const chosenRole = response.updRole;
+            const roleTitle = response.updRoleTitle;
+            const roleSalary = response.updRoleSalary;
+
+            if ((chosenRole != "None")) {
+                
+                const getRoleId = `SELECT id FROM role WHERE title LIKE "${chosenRole}";`;
+                const runRoleQuery = await getListQuery(getRoleId);
+
+                const updateRoleQuery = `UPDATE role SET  WHERE id = ${roleId};`
+
+                // runQuery(updateRoleQuery, false, "deleteEmployee", `${chosenRole} [ROLE]`);
+
+            }
+            else {
+                console.log("No role update");
+            }
+            
         })
 }
 
