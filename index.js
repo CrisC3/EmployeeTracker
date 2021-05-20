@@ -935,16 +935,6 @@ const remDept = async () => {
         });
 }
 
-function dataValidation(input, msg) {
-    
-    if (input)
-        return true;
-    else {
-        console.log(`\n${msg}`);
-        return false;
-    }
-}
-
 const updDept = async () => {
 
     console.log("\nUpdating department(s)\n");
@@ -999,6 +989,16 @@ const updDept = async () => {
 
             }
         })
+}
+
+function dataValidation(input, msg) {
+    
+    if (input)
+        return true;
+    else {
+        console.log(`\n${msg}`);
+        return false;
+    }
 }
 
 //#region Line separators
