@@ -836,9 +836,36 @@ const addDept = async () => {
                 message: "Please enter the new department name:"
             }
         ])
-        .then((response) => {
+        .then(async (response) => {
 
             console.log(response);
+
+            const newDeptName = response.newDeptName;
+            const queryIfDeptExists = `SELECT name FROM department WHERE name LIKE "${newDeptName}";`
+            const checkIfDeptExists = await getListQuery(queryIfDeptExists);
+            const deptExistName = checkIfDeptExists[0];
+
+            console.log("********************************");
+            console.log(checkIfDeptExists);
+            console.log(deptExistName);
+            console.log("********************************");
+
+            if ((newDeptName.length > 0) && (newDeptName != deptExistName)) {
+                console.log("The new department name is " + newDeptName);
+            }
+            else {
+                
+                let msgMain = "No department was added";
+                const msgNoName = "\nThere was no department name set";
+                const msgDupRole = `\nThere exists a department name of "${newDeptName}" already`;
+
+                sepStart();
+                (newDeptName.length == 0) ? msgMain += msgNoName : "";
+                (newDeptName == deptExistName) ? msgMain += msgDupRole : "";
+                console.log(msgMain);
+                sepEnd();
+                // mainPrompt();
+            }
 
             process.exit(0);
         })
