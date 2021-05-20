@@ -138,6 +138,12 @@ const mainPrompt = () => {
                     // Calls the const anonymous function
                     viewAllDept();
                     break;
+                
+                case "Add department":
+
+                    // Calls the const anonymous function
+                    addDept();
+                    break;
 
                 default:                    
                     
@@ -816,6 +822,26 @@ const viewAllDept = async () => {
         dept.id`;
     
     runQuery(sqlQuery);
+}
+
+const addDept = async () => {
+
+    console.log("\nAdding new department(s)\n");
+
+    inquirer
+        .prompt([
+            {
+                type: "input",
+                name: "newDeptName",
+                message: "Please enter the new department name:"
+            }
+        ])
+        .then((response) => {
+
+            console.log(response);
+
+            process.exit(0);
+        })
 }
 
 function dataValidation(input, msg) {
