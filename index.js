@@ -897,21 +897,36 @@ const remDept = async () => {
             {
                 type: "list",
                 name: "remDept",
-                message: "Please select the department to remove\n(NOTE: You can only see departments that have no roles,\nin order to fully remove a department,\nneed to remove the department assign to roles/titles):",
+                message: "Please select the department to remove (NOTE: You can only see departments with no roles, in order to fully remove a department, you will need to re-assign roles/titles departments):",
                 choices: deptChoices
             }
         ])
-        .then((response) => {
+        .then(async (response) => {
             
             console.log(response);
 
-            const remDept = response.remDept;
+            const chosenDept = response.remDept;
 
-            if (remDept != "None") {
-                console.log(remDept);
+            if (chosenDept != "None") {
+                
+                const getRemDeptId = `SELECT id FROM department WHERE name LIKE "${chosenDept}";`;
+                const remDeptQuery = await getListQuery(getRemDeptId);
+                const deptId = remDeptQuery[0].id;
+
+                const deleteDeptQuery = `DELETE FROM department WHERE id = ${deptId};`
+
+                runQuery(deleteDeptQuery, false, "deleteDept", `${chosenDept} [DEPARTMENT]`);
+            }
+            else {
+
+                let msgMain = "No department was removed\nThere was no department selected";
+                
+                sepStart();
+                console.log(msgMain);
+                sepEnd();
+                mainPrompt();
             }
 
-            process.exit(0);
         });
 }
 
