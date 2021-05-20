@@ -696,8 +696,8 @@ const remRoles = async () => {
 
     console.log("\nRemoving role(s)\n");
 
-    const deptQuery = "SELECT title FROM role;";
-    const deptChoices = await getListQuery(deptQuery);
+    const roleQuery = "SELECT title FROM role;";
+    const roleChoices = await getListQuery(roleQuery);
 
     inquirer
         .prompt([
@@ -705,7 +705,7 @@ const remRoles = async () => {
                 type: "list",
                 name: "remRole",
                 message: "Please select a role to delete:",
-                choices: deptChoices
+                choices: roleChoices
             }
         ])
         .then(async (response) => {
