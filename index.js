@@ -6,13 +6,15 @@ const asEmpId = `id AS "[Employee ID]"`;
 const asEmpFirstName = `first_name AS "[Emp. First Name]"`;
 const asEmpLastName = `last_name AS "[Emp. Last Name]"`;
 const asEmpRoleTitle = `title AS "[Emp. Role/Title]"`;
-const asDeptName = `name AS "[Emp. Department]"`;
+const asEmpDeptName = `name AS "[Emp. Department]"`;
 const asEmpSalary = `"[Emp. Salary]"`;
 const asManager = `"[Manager Name]"`;
 const asRoleId = `id AS "[Role ID]"`;
 const asRoleTitle = `title AS "[Role Title]"`;
 const asRoleSalary = `"[Role Salary]"`;
 const asRoleDeptName = `name AS "[Role Dept. Name]"`;
+const asDeptId = `id AS "[Dept. ID]"`
+const asDeptName = `name AS "[Department]"`;
 
 const connection = mysql.createConnection({
     host: "localhost",
@@ -275,7 +277,7 @@ const viewAllEmployees = () => {
         emp.${asEmpFirstName},
         emp.${asEmpLastName},
         role.${asEmpRoleTitle},
-        department.${asDeptName},
+        department.${asEmpDeptName},
         CONCAT("$ ", FORMAT(role.salary, 2)) AS ${asEmpSalary},
         IFNULL(CONCAT(mgr.first_name, " ", mgr.last_name), "(N/A)") AS ${asManager}
     FROM
@@ -301,7 +303,7 @@ const viewAllEmployeesByDep = () => {
         emp.${asEmpId},
         emp.${asEmpFirstName},
         emp.${asEmpLastName},
-        dept.${asDeptName}
+        dept.${asEmpDeptName}
     FROM
         employee emp
     INNER JOIN role ON
@@ -612,6 +614,7 @@ const updEmployeeMgr = async() => {
 }
 
 const viewAllRoles = () => {
+    
     console.log("\nQuerying for all titles/roles\n");
     
     const sqlQuery = 
@@ -803,9 +806,16 @@ const viewAllDept = async () => {
 
     console.log("\nQuerying for all departments\n");
 
-    const deptQuery = "SELECT name FROM department;";
-    const deptChoices = await getListQuery(deptQuery);
-
+    const sqlQuery = 
+    `SELECT 
+        dept.${asDeptId},
+        dept.${asDeptName}
+    FROM
+        department AS dept
+    ORDER BY
+        dept.id`;
+    
+    runQuery(sqlQuery);
 }
 
 function dataValidation(input, msg) {
