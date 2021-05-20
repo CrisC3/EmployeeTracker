@@ -904,11 +904,12 @@ const remDept = async () => {
         .then((response) => {
             
             console.log(response);
-            // const remDept = response.remDept;
 
-            // if (remDept != "None") {
-            //     console.log(remDept);
-            // }
+            const remDept = response.remDept;
+
+            if (remDept != "None") {
+                console.log(remDept);
+            }
 
             process.exit(0);
         });
