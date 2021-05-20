@@ -699,6 +699,17 @@ const remRoles = async () => {
         .then(async (response) => {
             console.log(response);
             const chosenRole = response.remRole;
+
+            if (chosenRole != "None") {
+
+                const getRoleId = `SELECT id FROM role WHERE title LIKE "${chosenRole}";`;
+                const remRoleQuery = await getListQuery(getRoleId);
+                const roleId = remRoleQuery[0].id;
+
+                const deleteRoleQuery = `DELETE FROM role WHERE id = ${roleId};`
+
+                runQuery(deleteRoleQuery, false, "deleteEmployee", `${chosenRole} [ROLE]`);
+            }
         })
 
 }
