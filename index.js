@@ -731,7 +731,7 @@ const updRoles = async () => {
     console.log("\nUpdating role(s)\n");
 
     const roleQuery = "SELECT title FROM role;";
-    const roleChoices = await getListQuery(deptQuery);
+    const roleChoices = await getListQuery(roleQuery);
 
     inquirer
         .prompt([
