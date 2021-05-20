@@ -59,6 +59,7 @@ const mainPrompt = () => {
                     "Add department",
                     "Remove department",
                     "Update department",
+                    ">> Clear screen <<",
                     "..Finish"],
                 loop: false
             }
@@ -143,6 +144,12 @@ const mainPrompt = () => {
 
                     // Calls the const anonymous function
                     addDept();
+                    break;
+                
+                case ">> Clear screen <<":
+
+                    console.clear();
+                    mainPrompt();
                     break;
 
                 default:                    
