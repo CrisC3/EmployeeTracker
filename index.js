@@ -152,6 +152,12 @@ const mainPrompt = () => {
                     remDept();
                     break;
                 
+                case "Update department":
+
+                    // Calls the const anonymous function
+                    updDept();
+                    break;
+                
                 case ">> Clear screen <<":
 
                     console.clear();
@@ -938,6 +944,17 @@ function dataValidation(input, msg) {
         console.log(`\n${msg}`);
         return false;
     }
+}
+
+const updDept = async () => {
+
+    console.log("\nUpdating department(s)\n");
+
+    const deptQuery = "SELECT name FROM department;";
+    const deptChoices = await getListQuery(deptQuery);
+
+    process.exit(0);
+
 }
 
 //#region Line separators
