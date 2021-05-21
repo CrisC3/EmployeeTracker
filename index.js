@@ -368,13 +368,15 @@ const addEmployee = async () => {
                 type: "list",
                 name: "newEmpRole",
                 message: "Please enter the new employee's title/role:",
-                choices: roleChoices
+                choices: roleChoices,
+                loop: false
             },
             {
                 type: "list",
                 name: "newEmpMgr",
                 message: "Please enter the new employee's manager:",
-                choices: mgrChoices
+                choices: mgrChoices,
+                loop: false
             }
         ])
         .then(async (response) => {
@@ -468,7 +470,8 @@ const remEmployee = async () => {
                 type: "list",
                 name: "chosenEmp",
                 message: "Please select the employee you want to remove:",
-                choices: empChoices
+                choices: empChoices,
+                loop: false
             }
         ])
         .then(async (response) => {
@@ -513,13 +516,15 @@ const updEmployeeRole = async () => {
                 type: "list",
                 name: "chosenEmp",
                 message: "Please select the employee you want to update title/role:",
-                choices: empChoices
+                choices: empChoices,
+                loop: false
             },
             {
                 type: "list",
                 name: "chosenRole",
                 message: "Please select the title/role for the employee:",
-                choices: roleChoices
+                choices: roleChoices,
+                loop: false
             }
         ])
         .then(async (response) => {
@@ -658,7 +663,8 @@ const addRoles = async () => {
                 type: "list",
                 name: "newRoleDept",
                 message: "Please set the new role department:",
-                choices: deptChoices
+                choices: deptChoices,
+                loop: false
             }
         ])
         .then(async (response) => {
@@ -713,7 +719,8 @@ const remRoles = async () => {
                 type: "list",
                 name: "remRole",
                 message: "Please select a role to delete:",
-                choices: roleChoices
+                choices: roleChoices,
+                loop: false
             }
         ])
         .then(async (response) => {
@@ -758,7 +765,8 @@ const updRoles = async () => {
                 type: "list",
                 name: "updRole",
                 message: "Please select a role to update:",
-                choices: roleChoices
+                choices: roleChoices,
+                loop: false
             },
             {
                 type: "input",
@@ -774,7 +782,8 @@ const updRoles = async () => {
                 type: "list",
                 name: "updRoleDept",
                 message: "Please select a department to update the role:",
-                choices: deptChoices
+                choices: deptChoices,
+                loop: false
             }
         ])
         .then(async (response) => {
@@ -899,7 +908,8 @@ const remDept = async () => {
                 type: "list",
                 name: "remDept",
                 message: "Please select the department to remove (NOTE: You can only see departments with no roles, in order to fully remove a department, you will need to re-assign roles/titles departments):",
-                choices: deptChoices
+                choices: deptChoices,
+                loop: false
             }
         ])
         .then(async (response) => {
@@ -942,7 +952,8 @@ const updDept = async () => {
                 type: "list",
                 name: "updDept",
                 message: "Please select the department to update:",
-                choices: deptChoices
+                choices: deptChoices,
+                loop: false
             },
             {
                 type: "input",
