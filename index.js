@@ -160,6 +160,8 @@ const mainPrompt = () => {
                 
                 case ">> Clear screen <<":
 
+                    // Clears out the console screen output
+                    // and returns to the mainPrompt list
                     console.clear();
                     mainPrompt();
                     break;
