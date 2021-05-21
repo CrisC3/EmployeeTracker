@@ -223,12 +223,6 @@ async function getListQuery(sqlQuery, exclude) {
 
     let sqlList = [];
 
-    // sepStart();
-    // console.log("=== sqlQuery output for testing [START] ===\n");
-    // console.log(sqlQuery);
-    // console.log("\n=== sqlQuery output for testing [END] ===");
-    // sepEnd();
-
     const getFullList = new Promise((resolve, reject) => {
         connection.query(sqlQuery, (err, res) => (err) ? reject(err) : resolve(res));
     });
@@ -238,15 +232,8 @@ async function getListQuery(sqlQuery, exclude) {
         
         let newData = JSON.parse(JSON.stringify(response));
 
-        // console.log("=== newData output for testing [START] ===\n");
-        // console.log(newData);
-        // console.log("newData.length = " + newData.length);
-        // console.log("\n=== newData output for testing [END] ===");
-
         if ((newData.length > 0) && (newData[0].hasOwnProperty("title"))) {
 
-            console.log("Inside of TITLE");
-            
             (newData.length > 1) ? sqlList.push("None") : "";
 
             newData.forEach(element => {
@@ -255,7 +242,6 @@ async function getListQuery(sqlQuery, exclude) {
         }
         else if ((newData.length > 0) && (newData[0].hasOwnProperty("manager"))) {
 
-            console.log("Inside of MANAGER");
             sqlList.push("None");
 
             newData.forEach(element => {
@@ -264,7 +250,6 @@ async function getListQuery(sqlQuery, exclude) {
         }
         else if ((newData.length > 0) && (newData[0].hasOwnProperty("empFullName"))) {
 
-            console.log("Inside of EMPFULLNAME");
             sqlList.push("None");
 
             newData.forEach(element => {
@@ -273,8 +258,6 @@ async function getListQuery(sqlQuery, exclude) {
             });            
         }
         else if ((newData.length > 0) && (newData[0].hasOwnProperty("name"))) {
-
-            console.log("Inside of NAME");
 
             sqlList.push("None");
             
@@ -288,11 +271,6 @@ async function getListQuery(sqlQuery, exclude) {
         }
     });
 
-    // sepStart();
-    // console.log("=== sqlList output for testing [START] ===\n");
-    // console.log(sqlList);
-    // console.log("\n=== sqlList output for testing [END] ===");
-    // sepEnd();
     return sqlList;    
 }
 
@@ -600,7 +578,6 @@ const updEmployeeMgr = async() => {
         ])
         .then(async (response) => {
 
-            console.log(response);
             const chosenEmp = response.chosenEmp;
             const empFullName = (chosenEmp != "None") ? chosenEmp.split(" ") : [];
             const empFirstName = empFullName[0];
@@ -611,10 +588,6 @@ const updEmployeeMgr = async() => {
             const mgrFirstName = mgrFullName[0];
             const mgrLastName = mgrFullName[1];
 
-            console.log(empFirstName + " " + empLastName);
-            console.log(mgrFirstName + " " + mgrLastName);
-
-            // if ((chosenEmp != "None") && (chosenMgr != "None") && (chosenEmp != chosenMgr)) {
             if ((chosenEmp != "None") && (chosenEmp != chosenMgr)) {
 
                 const getEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
@@ -931,8 +904,6 @@ const remDept = async () => {
         ])
         .then(async (response) => {
             
-            console.log(response);
-
             const chosenDept = response.remDept;
 
             if (chosenDept != "None") {
@@ -980,10 +951,6 @@ const updDept = async () => {
             }
         ])
         .then(async (response) => {
-
-            console.log("RESPONSE-v");
-            console.log(response);
-            console.log("RESPONSE-^");
 
             const updChosenDept = response.updDept;
             const newDeptName = response.updDeptName;
