@@ -221,11 +221,11 @@ async function getListQuery(sqlQuery, exclude) {
 
     let sqlList = [];
 
-    sepStart();
-    console.log("=== sqlQuery output for testing [START] ===\n");
-    console.log(sqlQuery);
-    console.log("\n=== sqlQuery output for testing [END] ===");
-    sepEnd();
+    // sepStart();
+    // console.log("=== sqlQuery output for testing [START] ===\n");
+    // console.log(sqlQuery);
+    // console.log("\n=== sqlQuery output for testing [END] ===");
+    // sepEnd();
 
     const getFullList = new Promise((resolve, reject) => {
         connection.query(sqlQuery, (err, res) => (err) ? reject(err) : resolve(res));
@@ -236,10 +236,10 @@ async function getListQuery(sqlQuery, exclude) {
         
         let newData = JSON.parse(JSON.stringify(response));
 
-        console.log("=== newData output for testing [START] ===\n");
-        console.log(newData);
-        console.log("newData.length = " + newData.length);
-        console.log("\n=== newData output for testing [END] ===");
+        // console.log("=== newData output for testing [START] ===\n");
+        // console.log(newData);
+        // console.log("newData.length = " + newData.length);
+        // console.log("\n=== newData output for testing [END] ===");
 
         if ((newData.length > 0) && (newData[0].hasOwnProperty("title"))) {
 
@@ -286,11 +286,11 @@ async function getListQuery(sqlQuery, exclude) {
         }
     });
 
-    sepStart();
-    console.log("=== sqlList output for testing [START] ===\n");
-    console.log(sqlList);
-    console.log("\n=== sqlList output for testing [END] ===");
-    sepEnd();
+    // sepStart();
+    // console.log("=== sqlList output for testing [START] ===\n");
+    // console.log(sqlList);
+    // console.log("\n=== sqlList output for testing [END] ===");
+    // sepEnd();
     return sqlList;    
 }
 
@@ -774,6 +774,8 @@ const updRoles = async () => {
 
     const roleQuery = "SELECT title FROM role;";
     const roleChoices = await getListQuery(roleQuery);
+    const deptQuery = "SELECT name FROM department;";
+    const deptChoices = await getListQuery(deptQuery);
 
     inquirer
         .prompt([
@@ -792,23 +794,42 @@ const updRoles = async () => {
                 type: "number",
                 name: "updRoleSalary",
                 message: "Please enter an updated role salary:"
+            },
+            {
+                type: "list",
+                name: "updRoleDept",
+                message: "Please select a department to update the role:",
+                choices: deptChoices
             }
         ])
         .then(async (response) => {
             
             const chosenRole = response.updRole;
-            const roleTitle = response.updRoleTitle;
+            const chosenDept = response.updRoleDept;
+            const roleTitle = (response.updRoleTitle != "") ? response.updRoleTitle : chosenRole;
             const roleSalaryQuery = `SELECT salary FROM role WHERE title LIKE "${chosenRole}"`;
             const roleSalaryCheck = (!(isNaN(response.updRoleSalary))) ? response.updRoleSalary : ((roleTitle.length > 0) ? await getListQuery(roleSalaryQuery) : 0);
-            const roleSalary = ((roleSalaryCheck.length > 0)) ? roleSalaryCheck[0].salary : roleSalaryCheck;
-
+            const roleSalary = ((roleSalaryCheck.length > 0)) ? roleSalaryCheck[0].salary : roleSalaryCheck;            
+            const roleDeptCurrQuery = `SELECT department_id FROM role WHERE title LIKE "${chosenRole}"`;
+            const roleDeptQuery = `SELECT id FROM department WHERE name LIKE "${chosenDept}"`;            
+            const roleDeptCheck = (chosenDept != "None") ? await getListQuery(roleDeptQuery) : await getListQuery(roleDeptCurrQuery);
+            const roleDeptId = (roleDeptCheck[0].hasOwnProperty("id")) ? roleDeptCheck[0].id : roleDeptCheck[0].department_id;
+            
             if ((chosenRole != "None") && (roleTitle.length > 0)) {
 
                 const getRoleId = `SELECT id FROM role WHERE title LIKE "${chosenRole}";`;
                 const runRoleQuery = await getListQuery(getRoleId);
                 const roleId = runRoleQuery[0].id;
 
-                const updateRoleQuery = `UPDATE role SET title = "${roleTitle}", salary = ${roleSalary} WHERE id = ${roleId};`
+                const updateRoleQuery = 
+                `UPDATE
+                    role
+                SET
+                    title = "${roleTitle}",
+                    salary = ${roleSalary},
+                    department_id = ${roleDeptId}
+                WHERE
+                    id = ${roleId};`
 
                 runQuery(updateRoleQuery, false, "updateRole", `${chosenRole} [ROLE]`);
 
