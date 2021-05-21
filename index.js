@@ -5,8 +5,8 @@ const cTable = require("console.table");
 const asEmpId = `id AS "[Employee ID]"`;
 const asEmpFirstName = `first_name AS "[Emp. First Name]"`;
 const asEmpLastName = `last_name AS "[Emp. Last Name]"`;
-const asEmpRoleTitle = `title AS "[Emp. Role/Title]"`;
-const asEmpDeptName = `name AS "[Emp. Department]"`;
+const asEmpRoleTitle = `"[Emp. Role/Title]"`;
+const asEmpDeptName = `"[Emp. Department]"`;
 const asEmpSalary = `"[Emp. Salary]"`;
 const asManager = `"[Manager Name]"`;
 const asRoleId = `id AS "[Role ID]"`;
@@ -290,20 +290,20 @@ const viewAllEmployees = () => {
         emp.${asEmpId},
         emp.${asEmpFirstName},
         emp.${asEmpLastName},
-        role.${asEmpRoleTitle},
-        department.${asEmpDeptName},
-        CONCAT("$ ", FORMAT(role.salary, 2)) AS ${asEmpSalary},
+        IFNULL(role.title, "(N/A)") AS ${asEmpRoleTitle},
+        IFNULL(department.name, "(N/A)") AS ${asEmpDeptName},
+        IFNULL(CONCAT("$ ", FORMAT(role.salary, 2)), "(N/A)") AS ${asEmpSalary},
         IFNULL(CONCAT(mgr.first_name, " ", mgr.last_name), "(N/A)") AS ${asManager}
     FROM
         employee AS emp
     LEFT JOIN employee AS mgr ON
         mgr.id = emp.manager_id
-    INNER JOIN role ON
+    LEFT JOIN role ON
         emp.role_id = role.id
-    INNER JOIN department ON
+    LEFT JOIN department ON
         role.department_id = department.id
     ORDER BY
-        emp.id`;
+        emp.id;`;
     
     runQuery(sqlQuery);
 };
