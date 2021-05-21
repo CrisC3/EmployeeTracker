@@ -59,6 +59,7 @@ const mainPrompt = () => {
                     "Add department",
                     "Remove department",
                     "Update department",
+                    "View the total utilized budget of a department",
                     ">> Clear screen <<",
                     "..Finish"],
                 loop: false
@@ -156,6 +157,12 @@ const mainPrompt = () => {
 
                     // Calls the const anonymous function
                     updDept();
+                    break;
+
+                case "View the total utilized budget of a department":
+
+                    // Calls the const anonymous function
+                    viewUtilBudgetByDept();
                     break;
                 
                 case ">> Clear screen <<":
@@ -991,6 +998,30 @@ const updDept = async () => {
             }
         })
 }
+
+const viewUtilBudgetByDept = () => {
+
+    console.log("\nQuerying for the total utilized budget of every department\n");
+    
+    const sqlQuery = 
+    `SELECT 
+        dept.id AS "[Dept. ID]",
+        dept.name AS "[Department]",
+        CONCAT("$ ", FORMAT(SUM(role.salary), 2)) AS "[Dept. Budget]"
+    FROM
+        employee emp
+    INNER JOIN role ON
+        emp.role_id = role.id
+    INNER JOIN department dept ON
+        role.department_id = dept.id
+    GROUP BY
+        dept.name
+    ORDER BY
+        dept.id;`;
+    
+    runQuery(sqlQuery);
+}
+
 
 //#region Line separators
 function sepStart() {
