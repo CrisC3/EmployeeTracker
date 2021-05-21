@@ -317,12 +317,12 @@ const viewAllEmployeesByDep = () => {
         emp.${asEmpId},
         emp.${asEmpFirstName},
         emp.${asEmpLastName},
-        dept.${asEmpDeptName}
+        IFNULL(dept.name, "(N/A)") AS ${asEmpDeptName}
     FROM
         employee emp
-    INNER JOIN role ON
+    LEFT JOIN role ON
         emp.role_id = role.id
-    INNER JOIN department dept ON
+    LEFT JOIN department dept ON
         role.department_id = dept.id
     ORDER BY
         emp.id`;
