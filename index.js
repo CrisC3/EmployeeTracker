@@ -981,16 +981,6 @@ const updDept = async () => {
         })
 }
 
-function dataValidation(input, msg) {
-    
-    if (input)
-        return true;
-    else {
-        console.log(`\n${msg}`);
-        return false;
-    }
-}
-
 //#region Line separators
 function sepStart() {
     console.log("\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
