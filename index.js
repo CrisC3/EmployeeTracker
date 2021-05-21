@@ -199,17 +199,17 @@ function runQuery(sqlQueryData, returnToCall, queryType, info) {
         if (sqlQueryData.substring(0, 6) == "SELECT") {
                 console.table(res);
         }
-        else if (sqlQueryData.substring(0, 6) == "INSERT" && ((queryType == "AddEmployee") || (queryType == "AddRole") || (queryType == "AddDept"))) {
+        else if (sqlQueryData.substring(0, 6) == "INSERT" && ((queryType == "AddEmployee") || (queryType == "AddRole") || (queryType == "AddDept") || (queryType == "AddRole"))) {
             sepStart();
             console.log(`Added "${info}" to the database`);
             sepEnd();
         }
-        else if (sqlQueryData.substring(0, 6) == "DELETE" && (queryType == "deleteEmployee")) {
+        else if (sqlQueryData.substring(0, 6) == "DELETE" && ((queryType == "deleteEmployee") || (queryType == "deleteRole") || (queryType == "deleteDept"))) {
             sepStart();
             console.log(`Removed "${info}" from the database`);
             sepEnd();
         }
-        else if (sqlQueryData.substring(0, 6) == "UPDATE" && (queryType == "updateEmployee")) {
+        else if (sqlQueryData.substring(0, 6) == "UPDATE" && ((queryType == "updateEmployee") || (queryType == "updateRole") || (queryType == "updateDept"))) {
             sepStart();
             console.log(`Updated "${info}" in the database`);
             sepEnd();
