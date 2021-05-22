@@ -16,6 +16,7 @@ const asRoleDeptName = `name AS "[Role Dept. Name]"`;
 const asDeptId = `id AS "[Dept. ID]"`
 const asDeptName = `name AS "[Department]"`;
 
+// Creates connection to MySQL with credentials
 const connection = mysql.createConnection({
     host: "localhost",
   
@@ -30,11 +31,13 @@ const connection = mysql.createConnection({
     database: "employeeCms",
 });
 
+// Initiates connection to MySQL and then calls mainPrompt
 connection.connect((err) => {
     if (err) throw err;
     mainPrompt();
 });
 
+// Prompts user on what they want to do
 const mainPrompt = () => {
 
     inquirer
@@ -67,6 +70,7 @@ const mainPrompt = () => {
         ])
         .then((response) => {
             
+            // Checks what the user choice was, and calls the function to run
             switch (response.mainprompt) {
 
                 case "View all Employees":
@@ -191,8 +195,11 @@ const mainPrompt = () => {
         });
 };
 
+// Function which runs different queries
 function runQuery(sqlQueryData, returnToCall, queryType, info) {
 
+    // Runs the sqlQuery and gets the output
+    // based on the statement and queryType
     connection.query(sqlQueryData, (err, res) => {
         if (err) throw err;
         
@@ -215,6 +222,9 @@ function runQuery(sqlQueryData, returnToCall, queryType, info) {
             sepEnd();
         }
         
+
+        // Checks if to return the calling function
+        // or display the mainPrompt();
         switch (returnToCall) {
             case true:
                 return;
@@ -226,19 +236,27 @@ function runQuery(sqlQueryData, returnToCall, queryType, info) {
     });
 }
 
+
+// async function to get a single data row or a list of MySQL,
+// to display list to user, or find an ID/title/department.
 async function getListQuery(sqlQuery, exclude) {
 
     let sqlList = [];
 
+    // Promise function, to run sql query and wait for the result
     const getFullList = new Promise((resolve, reject) => {
         connection.query(sqlQuery, (err, res) => (err) ? reject(err) : resolve(res));
     });
 
+    // Fetch of the SQL query output, to wait on
     await getFullList
     .then(response => {
         
+        // Local variable to handle the response, and convert
+        // it into JSON, to transform the data as require
         let newData = JSON.parse(JSON.stringify(response));
 
+        // Checks if the newData is an object, and has title/manager/... or no properties
         if ((newData.length > 0) && (newData[0].hasOwnProperty("title"))) {
 
             (newData.length > 1) ? sqlList.push("None") : "";
@@ -278,9 +296,11 @@ async function getListQuery(sqlQuery, exclude) {
         }
     });
 
+    // Returns the data to the calling function
     return sqlList;    
 }
 
+// Runs the view all employees query
 const viewAllEmployees = () => {
     
     console.log("\nQuerying for all employees\n");
@@ -305,9 +325,11 @@ const viewAllEmployees = () => {
     ORDER BY
         emp.id;`;
     
+    // Calls function to run query
     runQuery(sqlQuery);
 };
 
+// Runs the view all employees by department query
 const viewAllEmployeesByDep = () => {
     
     console.log("\nQuerying for all employees by department\n");
@@ -327,9 +349,11 @@ const viewAllEmployeesByDep = () => {
     ORDER BY
         emp.id`;
     
+    // Calls function to run query
     runQuery(sqlQuery);
 };
 
+// Runs the view all employees by manager query
 const viewAllEmployeesByMgr = () => {
     
     console.log("\nQuerying for all employees by manager\n");
@@ -347,17 +371,19 @@ const viewAllEmployeesByMgr = () => {
     ORDER BY
         CONCAT(mgr.first_name, " ", mgr.last_name), emp.id`;
 
+    // Calls function to run query
     runQuery(sqlQuery);
 };
 
+// Runs the add new employee query
 const addEmployee = async () => {
     
     console.log("\nAdding new employee(s)\n");
 
     const rolesQuery = "SELECT title FROM role";
     const mgrQuery = `SELECT CONCAT(first_name, " ", last_name) AS manager FROM employee`;
-    const roleChoices = await getListQuery(rolesQuery);
-    const mgrChoices = await getListQuery(mgrQuery);
+    const roleChoices = await getListQuery(rolesQuery); // Queries the roles in database and return the list as array
+    const mgrChoices = await getListQuery(mgrQuery);    // Queries the employees in database and return the list as array
 
     inquirer
         .prompt([
@@ -388,6 +414,7 @@ const addEmployee = async () => {
         ])
         .then(async (response) => {
 
+            // Checks if the user entered first and last name for new employee
             if ((response.newEmpFirst != "") && (response.newEmpLast != "")) {
                 
                 const empFullName = response.newEmpFirst + " " + response.newEmpLast;
@@ -395,6 +422,7 @@ const addEmployee = async () => {
                 const mgrFirstName = mgrFullName[0];
                 const mgrLastName = mgrFullName[1];
                 
+                // Checks if the user chose None for the manager, but not None for role
                 if ((response.newEmpMgr == "None") && (response.newEmpRole != "None")) {
                     
                     const sqlQuery =
@@ -405,11 +433,14 @@ const addEmployee = async () => {
                             "${response.newEmpLast}",
                             (SELECT id FROM role WHERE title LIKE "${response.newEmpRole}")
                         );`;
-                        
+
+                    // Calls the run query to add, with message to display
                     runQuery(sqlQuery, false, "AddEmployee", `${empFullName} [EMPLOYEE]`);
                 }
                 else if ((response.newEmpMgr == "None") && (response.newEmpRole == "None")) {
                     
+                    // Else if statement - user set None for both manager and role for new employee
+
                     const sqlQuery =
                         `INSERT INTO employee (first_name, last_name)
                         VALUES
@@ -417,11 +448,14 @@ const addEmployee = async () => {
                             "${response.newEmpFirst}",
                             "${response.newEmpLast}"
                         );`;
-                        
+                    
+                    // Calls the run query to add, with message to display
                     runQuery(sqlQuery, false, "AddEmployee", `${empFullName} [EMPLOYEE]`);
                 }
                 else {
                     
+                    // Else - if user chose a manager
+
                     const newEmpInsertWithRoleQuery =
                         `INSERT INTO employee (first_name, last_name, role_id)
                         VALUES
@@ -438,20 +472,25 @@ const addEmployee = async () => {
                             "${response.newEmpLast}"
                         );`;
                         
+                        // ternary operator - to add new employee with or without role set
                         (response.newEmpRole != "None") ? 
                         runQuery(newEmpInsertWithRoleQuery, true, "AddEmployee", `${empFullName} [EMPLOYEE]`) :
                         runQuery(newEmpInsertNoRoleQuery, true, "AddEmployee", `${empFullName} [EMPLOYEE]`);
                     
+                        // Get manager ID
                         const getMgrIdQuery = `SELECT id FROM employee WHERE first_name LIKE "${mgrFirstName}" AND last_name LIKE "${mgrLastName}";`;
                         const mgrIdQuery = await getListQuery(getMgrIdQuery);
                         const mgrId = mgrIdQuery[0].id;
                         
+                        // Get the last inserted employee ID
                         const getNewEmplId = `SELECT id FROM employee WHERE first_name LIKE "${response.newEmpFirst}" AND last_name LIKE "${response.newEmpLast}" ORDER BY id DESC LIMIT 1;`;
                         const newEmpQuery = await getListQuery(getNewEmplId);
                         const empId = newEmpQuery[0].id;
                         
+                        // Query build
                         const updateEmpMgrQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`                
 
+                        // Run the query
                         runQuery(updateEmpMgrQuery);
                 }
             }
@@ -464,12 +503,13 @@ const addEmployee = async () => {
         });
 };
 
+// Runs the remove employee query
 const remEmployee = async () => {
     
     console.log("\nRemove existing employee(s)\n");
 
     const employeesQuery = `SELECT CONCAT(first_name, " ", last_name) AS empFullName FROM employee`;
-    const empChoices = await getListQuery(employeesQuery);
+    const empChoices = await getListQuery(employeesQuery); // Queries for all users to display as choices
 
     inquirer
         .prompt([
@@ -488,6 +528,7 @@ const remEmployee = async () => {
             const empFirstName = empFullName[0];
             const empLastName = empFullName[1];
 
+            // Checks if the user selected a valid employee
             if (chosenEmp != "None") {
 
                 const getRemEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
@@ -496,6 +537,7 @@ const remEmployee = async () => {
 
                 const deleteEmpMgrQuery = `DELETE FROM employee WHERE id = ${empId};`
 
+                // Calls function to delete employee
                 runQuery(deleteEmpMgrQuery, false, "deleteEmployee", `${chosenEmp} [EMPLOYEE]`);
             }
             else {
@@ -508,14 +550,15 @@ const remEmployee = async () => {
         });
 }
 
+// Runs the update employee query
 const updEmployeeRole = async () => {
 
     console.log("\nUpdate existing employee title/role\n");
 
     const employeesQuery = `SELECT CONCAT(first_name, " ", last_name) AS empFullName FROM employee`;
     const roleQuery = `SELECT title FROM role`;
-    const empChoices = await getListQuery(employeesQuery);
-    const roleChoices = await getListQuery(roleQuery);
+    const empChoices = await getListQuery(employeesQuery); // Queries for all employees and returns as a list
+    const roleChoices = await getListQuery(roleQuery); // Queries for all roles and returns as a list
 
     inquirer
         .prompt([
@@ -542,6 +585,7 @@ const updEmployeeRole = async () => {
             const empFirstName = empFullName[0];
             const empLastName = empFullName[1];
 
+            // Check if the user chose an employee
             if (chosenEmp != "None") {
 
                 const getUpdEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
@@ -553,6 +597,7 @@ const updEmployeeRole = async () => {
 
                 const updEmpRoleQuery = `UPDATE employee SET role_id = ${roleId} WHERE id = ${empId};`
 
+                // Calls function to update an employee
                 runQuery(updEmpRoleQuery, false, "updateEmployee", `${chosenEmp} [EMPLOYEE]`);
             }
             else {
@@ -564,12 +609,13 @@ const updEmployeeRole = async () => {
         })
 }
 
+// Runs the update employee manager query
 const updEmployeeMgr = async() => {
 
     console.log("\nUpdate existing employee manager\n");
 
     const employeesQuery = `SELECT CONCAT(first_name, " ", last_name) AS empFullName FROM employee`;
-    const empChoices = await getListQuery(employeesQuery);    
+    const empChoices = await getListQuery(employeesQuery); // Queries for all employees, and returns as a list
 
     inquirer
         .prompt([
@@ -600,6 +646,7 @@ const updEmployeeMgr = async() => {
             const mgrFirstName = mgrFullName[0];
             const mgrLastName = mgrFullName[1];
 
+            // Checks if the user selected an employee, and they didn't select the same employee as its own manager
             if ((chosenEmp != "None") && (chosenEmp != chosenMgr)) {
 
                 const getEmplId = `SELECT id FROM employee WHERE first_name LIKE "${empFirstName}" AND last_name LIKE "${empLastName}";`;
@@ -611,7 +658,7 @@ const updEmployeeMgr = async() => {
 
                 const updEmpRoleQuery = `UPDATE employee SET manager_id = ${mgrId} WHERE id = ${empId};`
 
-
+                // Calls function to run update
                 runQuery(updEmpRoleQuery, false, "updateEmployee", `${chosenEmp} [EMPLOYEE]`);
             }
             else {
@@ -627,6 +674,7 @@ const updEmployeeMgr = async() => {
         })
 }
 
+// Runs the view all roles query
 const viewAllRoles = () => {
     
     console.log("\nQuerying for all titles/roles\n");
@@ -644,15 +692,17 @@ const viewAllRoles = () => {
     ORDER BY
         rol.id`;
     
+    // Calls function to run query
     runQuery(sqlQuery);
 }
 
+// Runs the add new role query
 const addRoles = async () => {
 
     console.log("\nAdding new role(s)\n");
 
     const deptQuery = "SELECT name FROM department;";
-    const deptChoices = await getListQuery(deptQuery);
+    const deptChoices = await getListQuery(deptQuery); // Queries for existing roles and returns as a list
 
     inquirer
         .prompt([
@@ -683,6 +733,7 @@ const addRoles = async () => {
             const checkIfRoleExists = await getListQuery(queryIfRoleExists);
             const roleExistName = checkIfRoleExists[0];
             
+            // Checks if the newRole has data, the user did not select None, and does not enter the same existing role name
             if ((newRoleName.length > 0) && (newRoleDept != "None") && (newRoleName != roleExistName)) {
 
                 const sqlQuery =
@@ -693,7 +744,8 @@ const addRoles = async () => {
                             "${newRoleSalary}",
                             (SELECT id FROM department WHERE name LIKE "${newRoleDept}")
                         );`;
-                        
+                    
+                // Calls the function to add role
                 runQuery(sqlQuery, false, "AddRole", `${newRoleName} [ROLE]`);
 
             }
@@ -713,12 +765,13 @@ const addRoles = async () => {
         });
 }
 
+// Runs the remove role query
 const remRoles = async () => {
 
     console.log("\nRemoving role(s)\n");
 
     const roleQuery = "SELECT title FROM role;";
-    const roleChoices = await getListQuery(roleQuery);
+    const roleChoices = await getListQuery(roleQuery); // Queries for all existing roles, and returns as a list
 
     inquirer
         .prompt([
@@ -734,6 +787,7 @@ const remRoles = async () => {
             
             const chosenRole = response.remRole;
 
+            // Checks the user did not chose None
             if (chosenRole != "None") {
 
                 const getRoleId = `SELECT id FROM role WHERE title LIKE "${chosenRole}";`;
@@ -742,6 +796,7 @@ const remRoles = async () => {
 
                 const deleteRoleQuery = `DELETE FROM role WHERE id = ${roleId};`
 
+                // Calls function to run delete query
                 runQuery(deleteRoleQuery, false, "deleteRole", `${chosenRole} [ROLE]`);
             }
             else {
@@ -757,14 +812,15 @@ const remRoles = async () => {
 
 }
 
+// Runs the update role query
 const updRoles = async () => {
     
     console.log("\nUpdating role(s)\n");
 
     const roleQuery = "SELECT title FROM role;";
-    const roleChoices = await getListQuery(roleQuery);
+    const roleChoices = await getListQuery(roleQuery); // Queries for existing roles and return as a list
     const deptQuery = "SELECT name FROM department;";
-    const deptChoices = await getListQuery(deptQuery);
+    const deptChoices = await getListQuery(deptQuery); // Queries for existing departments and return as a list
 
     inquirer
         .prompt([
@@ -806,6 +862,7 @@ const updRoles = async () => {
             const roleDeptCheck = (chosenDept != "None") ? await getListQuery(roleDeptQuery) : await getListQuery(roleDeptCurrQuery);
             const roleDeptId = (roleDeptCheck[0].hasOwnProperty("id")) ? roleDeptCheck[0].id : roleDeptCheck[0].department_id;
             
+            // Checks if the user did not chose None, and if a role was entered
             if ((chosenRole != "None") && (roleTitle.length > 0)) {
 
                 const getRoleId = `SELECT id FROM role WHERE title LIKE "${chosenRole}";`;
@@ -822,6 +879,7 @@ const updRoles = async () => {
                 WHERE
                     id = ${roleId};`
 
+                // Calls function to run update
                 runQuery(updateRoleQuery, false, "updateRole", `${chosenRole} [ROLE]`);
 
             }
@@ -840,6 +898,7 @@ const updRoles = async () => {
         })
 }
 
+// Runs the view all departments query
 const viewAllDept = async () => {
 
     console.log("\nQuerying for all departments\n");
@@ -853,9 +912,11 @@ const viewAllDept = async () => {
     ORDER BY
         dept.id`;
     
+    // Calls function to run query
     runQuery(sqlQuery);
 }
 
+// Runs the add department query
 const addDept = async () => {
 
     console.log("\nAdding new department(s)\n");
@@ -875,6 +936,7 @@ const addDept = async () => {
             const checkIfDeptExists = await getListQuery(queryIfDeptExists);
             const deptExistName = checkIfDeptExists[0];
 
+            // Checks if the user entered a new department, and they did entered the same as a existing department
             if ((newDeptName.length > 0) && (newDeptName != deptExistName)) {
                 
                 const sqlQuery =
@@ -883,7 +945,8 @@ const addDept = async () => {
                         (
                             "${newDeptName}"
                         );`;
-                        
+                
+                // Calls function to run add query
                 runQuery(sqlQuery, false, "AddDept", `${newDeptName} [DEPARTMENT]`);
             }
             else {
@@ -902,12 +965,13 @@ const addDept = async () => {
         })
 }
 
+// Runs the remove department query
 const remDept = async () => {
 
     console.log("\nRemove department(s)\n");
 
     const deptQuery = "SELECT dept.name FROM department dept LEFT JOIN role rol ON dept.id = rol.department_id WHERE rol.department_id IS NULL;";
-    const deptChoices = await getListQuery(deptQuery);
+    const deptChoices = await getListQuery(deptQuery); // Queries for all existing deparment and returns as a list
 
     inquirer
         .prompt([
@@ -923,6 +987,7 @@ const remDept = async () => {
             
             const chosenDept = response.remDept;
 
+            // Checks the user did not chose None
             if (chosenDept != "None") {
                 
                 const getRemDeptId = `SELECT id FROM department WHERE name LIKE "${chosenDept}";`;
@@ -931,6 +996,7 @@ const remDept = async () => {
 
                 const deleteDeptQuery = `DELETE FROM department WHERE id = ${deptId};`
 
+                // Calls function to delete
                 runQuery(deleteDeptQuery, false, "deleteDept", `${chosenDept} [DEPARTMENT]`);
             }
             else {
@@ -946,12 +1012,13 @@ const remDept = async () => {
         });
 }
 
+// Runs the update department query
 const updDept = async () => {
 
     console.log("\nUpdating department(s)\n");
 
     const deptQuery = "SELECT name FROM department;";
-    const deptChoices = await getListQuery(deptQuery);
+    const deptChoices = await getListQuery(deptQuery); // Queries for existing department, and returns as a list
 
     inquirer
         .prompt([
@@ -973,6 +1040,7 @@ const updDept = async () => {
             const updChosenDept = response.updDept;
             const newDeptName = response.updDeptName;
 
+            // Checks the user did not chose None, and new department name was entered
             if ((updChosenDept != "None") && (newDeptName.length > 0)) {
 
                 const getUpdDeptId = `SELECT id FROM department WHERE name LIKE "${updChosenDept}";`;
@@ -981,6 +1049,7 @@ const updDept = async () => {
 
                 const updDeptQuery = `UPDATE department SET name = "${newDeptName}" WHERE id = ${deptId};`;
 
+                // Calls function to run update
                 runQuery(updDeptQuery, false, "updateDept", `${updChosenDept} => ${newDeptName} [DEPARTMENT]`);
             
             }
@@ -999,6 +1068,7 @@ const updDept = async () => {
         })
 }
 
+// Runs the view utilization salary by department
 const viewUtilBudgetByDept = () => {
 
     console.log("\nQuerying for the total utilized budget of every department\n");
